@@ -32,10 +32,21 @@
       margin-right: 15px; 
     }
     footer a:hover { text-decoration: underline; }
-    .disclaimer {
-      font-size: 12px; 
-      color: #777; 
-      margin-top: 8px; 
+    .disclaimer { font-size: 12px; color: #777; margin-top: 8px; }
+    /* Button styles for Projects section */
+    .project-buttons a {
+      display:inline-block;
+      padding:10px 20px;
+      margin-right:10px;
+      background-color:#222;
+      color:#fff;
+      text-decoration:none;
+      font-weight:bold;
+      border-radius:4px;
+      transition: background 0.3s;
+    }
+    .project-buttons a:hover {
+      background-color:#555;
     }
   </style>
 </head>
@@ -48,6 +59,12 @@
   <h2>Contact</h2>
   <p>Email: JANN-OSINT@proton.me</p>
   <p>Address: 1001 S Main St Ste 11354, Kalispell, MT 59901</p>
+
+  <h2>Projects</h2>
+  <div class="project-buttons">
+    <a href="https://jann.substack.com" target="_blank">JANN</a>
+    <a href="https://publish.obsidian.md/crystal-peak" target="_blank">Crystal Peak</a>
+  </div>
 
   <footer>
     <div>
