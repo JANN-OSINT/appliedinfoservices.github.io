@@ -1,3 +1,3 @@
-# appliedinfoservices.github.io
+# Applied Information Services
 
-[appliedinfoservices](appliedinfoservices.github.io)
+
