@@ -4,25 +4,59 @@
   <meta charset="UTF-8">
   <title>Applied Information Services LLC</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-    h1 { font-size: 28px; }
+    body { 
+      font-family: "Segoe UI", Roboto, Arial, sans-serif; 
+      margin: 40px auto; 
+      max-width: 900px; 
+      line-height: 1.6; 
+      color: #222; 
+      background-color: #fafafa; 
+    }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    h2 { font-size: 20px; margin-top: 30px; }
     p { max-width: 700px; }
-    footer { margin-top: 40px; font-size: 14px; color: #555; }
-    footer a { margin-right: 10px; color: #555; text-decoration: none; }
+    header { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    footer { 
+      border-top: 1px solid #ccc; 
+      margin-top: 50px; 
+      padding-top: 15px; 
+      font-size: 13px; 
+      color: #555; 
+      display: flex; 
+      justify-content: space-between; 
+      flex-wrap: wrap;
+    }
+    footer a { 
+      color: #555; 
+      text-decoration: none; 
+      margin-right: 15px; 
+    }
     footer a:hover { text-decoration: underline; }
+    .disclaimer {
+      font-size: 12px; 
+      color: #777; 
+      margin-top: 8px; 
+    }
   </style>
 </head>
 <body>
-  <h1>Applied Information Services LLC</h1>
-  <p>Applied Information Services provides subscription-based information services, online publications, and independent analysis for a general audience.</p>
+  <header>
+    <h1>Applied Information Services LLC</h1>
+    <p>Independent research, analysis, and publications for a global audience.</p>
+  </header>
 
   <h2>Contact</h2>
   <p>Email: jann-OSINT@proton.me</p>
   <p>Address: 1001 S Main St Ste 11354, Kalispell, MT 59901</p>
 
   <footer>
-    <a href="/privacy-policy.html">Privacy Policy</a>
-    <a href="/terms-of-service.html">Terms of Service</a>
+    <div>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms-of-service.html">Terms of Service</a>
+    </div>
+    <div class="disclaimer">
+      © 2025 Applied Information Services LLC. All rights reserved.
+    </div>
   </footer>
 </body>
 </html>
