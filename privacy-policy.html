@@ -26,6 +26,9 @@
     h2 { font-size: 20px; margin-top: 30px; }
     p { max-width: 700px; }
     header { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    .crumb { font-size: 14px; margin-bottom: 10px; }
+    header h1 a { color: inherit; text-decoration: none; }
+    header h1 a:hover { text-decoration: underline; }
     footer { 
       border-top: 1px solid #ccc; 
       margin-top: 50px; 
@@ -47,7 +50,8 @@
 </head>
 <body>
   <header>
-    <h1>Applied Information Services</h1>
+    <div class="crumb"><a href="index.html">← Back to Home</a></div>
+    <h1><a href="index.html">Applied Information Services</a></h1>
     <p>Research / Analysis / Consulting</p>
     <p>Information Solutions For Complex Domains</p>
   </header>
