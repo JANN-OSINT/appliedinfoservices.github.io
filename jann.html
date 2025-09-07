@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Our Services – JANN | Applied Information Services</title>
+
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date()); gtag('config', 'G-CWY00FKP9J');
   </script>
+
   <style>
     body { font-family: "Neue Haas", Inter, "Helvetica Neue"; margin: 40px auto; max-width: 900px; line-height: 1.6; color: #222; background:#EFEFEF; }
     h1 { font-size: 32px; margin-bottom: 10px; }
@@ -20,6 +23,27 @@
     footer a:hover { text-decoration:underline; }
     .disclaimer { font-size:12px; color:#777; margin-top:8px; }
     .crumb { font-size:14px; margin-bottom:10px; }
+
+    /* Button styles */
+    .project-buttons {
+      margin-top: 20px;
+    }
+    .project-buttons a {
+      display:inline-block;
+      padding:12px 24px;
+      margin-right:10px;
+      background-color:#222;
+      color:#fff;
+      text-decoration:none;
+      font-weight:bold;
+      border-radius:6px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.2);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .project-buttons a:hover {
+      background-color:#444;
+      transform:translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -31,10 +55,11 @@
   </header>
 
   <h2>Our Services – JANN</h2>
-  <p>
-    JANN is our research and writing platform. Visit here:
-    <a href="https://jann.substack.com" target="_blank" rel="noopener">https://jann.substack.com</a>
-  </p>
+  <p>JANN is our research and writing platform.</p>
+
+  <div class="project-buttons">
+    <a href="https://jann.substack.com" target="_blank" rel="noopener">Visit JANN</a>
+  </div>
 
   <footer>
     <div>
