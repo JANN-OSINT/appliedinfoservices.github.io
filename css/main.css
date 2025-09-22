@@ -1,1 +1,370 @@
+- {
+  box-sizing: border-box;
+  }
 
+body {
+font-family: “Consolas”, “Courier New”, “SF Mono”, “Monaco”, monospace;
+margin: 0;
+padding: 40px 20px;
+max-width: 900px;
+margin: 0 auto;
+line-height: 1.4;
+color: #222;
+background: #EFEFEF;
+min-height: 100vh;
+position: relative;
+}
+
+/* Subtle grid pattern background */
+body::before {
+content: ‘’;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-image:
+linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+background-size: 20px 20px;
+pointer-events: none;
+z-index: -1;
+}
+
+/* Header styling */
+header {
+background: linear-gradient(145deg, #f8f8f8, #e8e8e8);
+border: 1px solid #ccc;
+border-radius: 2px;
+padding: 30px;
+margin-bottom: 40px;
+box-shadow:
+0 2px 4px rgba(0,0,0,0.1),
+inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+}
+
+header::before {
+content: ‘// SYSTEM INITIALIZED’;
+position: absolute;
+top: 8px;
+right: 12px;
+font-size: 10px;
+color: #888;
+font-family: “Consolas”, monospace;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.company-info h1 {
+font-size: clamp(24px, 4vw, 36px);
+margin: 0 0 16px 0;
+color: #333;
+font-weight: 400;
+letter-spacing: 2px;
+text-transform: uppercase;
+font-family: “Consolas”, “Courier New”, monospace;
+}
+
+.tagline {
+font-size: 14px;
+color: #555;
+margin: 0 0 8px 0;
+font-weight: 400;
+text-transform: uppercase;
+letter-spacing: 3px;
+font-family: “Consolas”, monospace;
+}
+
+.description {
+font-size: 12px;
+color: #666;
+margin: 0;
+font-family: “Consolas”, monospace;
+letter-spacing: 1px;
+text-transform: uppercase;
+}
+
+/* Terminal-style blinking cursor */
+@keyframes blink {
+0%, 50% { opacity: 1; }
+51%, 100% { opacity: 0; }
+}
+
+.company-info h1::after {
+content: ‘_’;
+color: #666;
+animation: blink 1.5s infinite;
+font-weight: normal;
+}
+
+/* Content sections */
+.content-section {
+background: linear-gradient(145deg, #f8f8f8, #e8e8e8);
+border: 1px solid #ccc;
+border-radius: 2px;
+padding: 30px;
+margin-bottom: 40px;
+box-shadow:
+0 2px 4px rgba(0,0,0,0.1),
+inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+}
+
+.content-section::before {
+position: absolute;
+top: 8px;
+right: 12px;
+font-size: 10px;
+color: #888;
+font-family: “Consolas”, monospace;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.services-section::before {
+content: ‘// SERVICES_DIRECTORY’;
+}
+
+/* Headings */
+h1 {
+font-size: clamp(24px, 4vw, 36px);
+margin: 0 0 16px 0;
+color: #333;
+font-weight: 400;
+letter-spacing: 2px;
+text-transform: uppercase;
+font-family: “Consolas”, “Courier New”, monospace;
+}
+
+h2 {
+font-size: 18px;
+margin: 0 0 24px 0;
+color: #333;
+font-weight: 400;
+text-transform: uppercase;
+letter-spacing: 2px;
+font-family: “Consolas”, monospace;
+position: relative;
+}
+
+h2::after {
+content: ‘’;
+position: absolute;
+bottom: -8px;
+left: 0;
+width: 60px;
+height: 1px;
+background: linear-gradient(90deg, #666 0%, transparent 100%);
+}
+
+h3 {
+font-size: 16px;
+margin: 24px 0 16px 0;
+color: #333;
+font-weight: 400;
+text-transform: uppercase;
+letter-spacing: 1px;
+font-family: “Consolas”, monospace;
+}
+
+/* Paragraphs and text */
+p {
+max-width: 700px;
+margin: 16px 0;
+font-family: “Consolas”, monospace;
+font-size: 13px;
+line-height: 1.5;
+}
+
+/* Button styles */
+.project-buttons {
+display: flex;
+gap: 16px;
+flex-wrap: wrap;
+}
+
+.project-buttons a {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 12px 24px;
+background: linear-gradient(145deg, #e8e8e8, #d8d8d8);
+color: #333;
+text-decoration: none;
+font-weight: 400;
+border: 1px solid #bbb;
+border-radius: 2px;
+transition: all 0.2s ease;
+box-shadow:
+0 2px 4px rgba(0,0,0,0.1),
+inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+min-width: 140px;
+text-align: center;
+font-size: 12px;
+text-transform: uppercase;
+letter-spacing: 2px;
+font-family: “Consolas”, monospace;
+}
+
+.project-buttons a::before {
+content: ’> ’;
+opacity: 0;
+transition: opacity 0.2s ease;
+color: #555;
+}
+
+.project-buttons a:hover::before {
+opacity: 1;
+}
+
+.project-buttons a:hover {
+background: linear-gradient(145deg, #ddd, #ccc);
+border-color: #999;
+color: #222;
+box-shadow:
+0 4px 8px rgba(0,0,0,0.15),
+inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.project-buttons a:active {
+box-shadow:
+inset 0 2px 4px rgba(0,0,0,0.2),
+0 1px 2px rgba(0,0,0,0.1);
+transform: translateY(1px);
+}
+
+/* Breadcrumb navigation */
+.crumb {
+font-size: 12px;
+margin-bottom: 10px;
+font-family: “Consolas”, monospace;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.crumb a {
+color: #666;
+text-decoration: none;
+transition: color 0.2s ease;
+}
+
+.crumb a:hover {
+color: #333;
+}
+
+/* Substack embed styling */
+.substack-embed {
+margin: 30px 0;
+}
+
+.substack-embed iframe {
+border: 1px solid #ccc;
+border-radius: 2px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Footer styling */
+footer {
+background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+border: 1px solid #ccc;
+border-radius: 2px;
+padding: 20px 24px;
+font-size: 11px;
+color: #666;
+display: flex;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 20px;
+box-shadow:
+0 1px 2px rgba(0,0,0,0.1),
+inset 0 1px 0 rgba(255,255,255,0.8);
+position: relative;
+font-family: “Consolas”, monospace;
+}
+
+footer::before {
+content: ‘// END_OF_FILE’;
+position: absolute;
+top: 6px;
+right: 12px;
+font-size: 9px;
+color: #aaa;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+footer a {
+color: #777;
+text-decoration: none;
+margin-right: 16px;
+transition: color 0.2s ease;
+font-weight: 400;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+footer a:hover {
+color: #444;
+}
+
+.disclaimer {
+font-size: 10px;
+color: #888;
+margin-top: 8px;
+line-height: 1.4;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+body {
+padding: 20px 16px;
+font-size: 14px;
+}
+
+header, .content-section, footer {
+padding: 20px;
+}
+
+.company-info h1 {
+font-size: 24px;
+letter-spacing: 1px;
+}
+
+.tagline {
+font-size: 12px;
+letter-spacing: 2px;
+}
+
+.description {
+font-size: 11px;
+}
+
+h2 {
+font-size: 16px;
+letter-spacing: 1px;
+}
+
+.project-buttons {
+flex-direction: column;
+}
+
+.project-buttons a {
+width: 100%;
+font-size: 11px;
+}
+
+footer {
+flex-direction: column;
+text-align: left;
+gap: 12px;
+font-size: 10px;
+}
+
+footer a {
+margin: 0 12px 0 0;
+}
+}
