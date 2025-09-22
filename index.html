@@ -1,11 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Applied Information Services</title>
 
   <!-- Google tag (gtag.js) -->
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
+
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -23,10 +26,91 @@
       color: #222; 
       background-color: #EFEFEF; 
     }
-    h1 { font-size: 32px; margin-bottom: 10px; }
-    h2 { font-size: 20px; margin-top: 30px; }
+    
+    /* Logo and header styles */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    
+    .logo-symbol {
+      color: #f5f5f5;
+      font-size: 36px;
+      font-weight: bold;
+      font-family: "Neue Haas", Inter, "Helvetica Neue";
+      position: relative;
+    }
+    
+    .logo-symbol::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      bottom: 0;
+      width: 20px;
+      height: 3px;
+      background: linear-gradient(90deg, #f5f5f5 0%, transparent 100%);
+      border-radius: 2px;
+    }
+    
+    .logo-symbol::before {
+      content: '';
+      position: absolute;
+      right: -6px;
+      bottom: 6px;
+      width: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, #f5f5f5 0%, transparent 100%);
+      border-radius: 1px;
+    }
+    
+    .company-info h1 {
+      font-size: 32px;
+      margin: 0 0 5px 0;
+      color: #222;
+    }
+    
+    .company-info .tagline {
+      font-size: 16px;
+      color: #666;
+      margin: 0;
+      font-weight: 500;
+    }
+    
+    .company-info .description {
+      font-size: 14px;
+      color: #777;
+      margin: 5px 0 0 0;
+      font-style: italic;
+    }
+    
+    h2 { 
+      font-size: 20px; 
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+    
     p { max-width: 700px; }
-    header { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    
+    header { 
+      border-bottom: 1px solid #ccc; 
+      padding-bottom: 20px; 
+      margin-bottom: 30px; 
+    }
+    
     footer { 
       border-top: 1px solid #ccc; 
       margin-top: 50px; 
@@ -37,42 +121,92 @@
       justify-content: space-between; 
       flex-wrap: wrap;
     }
+    
     footer a { 
       color: #555; 
       text-decoration: none; 
       margin-right: 15px; 
     }
+    
     footer a:hover { text-decoration: underline; }
+    
     .disclaimer { font-size: 12px; color: #777; margin-top: 8px; }
+    
     /* Button styles for Projects section */
-    .project-buttons a {
-      display:inline-block;
-      padding:10px 20px;
-      margin-right:10px;
-      background-color:#222;
-      color:#fff;
-      text-decoration:none;
-      font-weight:bold;
-      border-radius:4px;
-      transition: background 0.3s;
+    .project-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
     }
+    
+    .project-buttons a {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #222;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
     .project-buttons a:hover {
-      background-color:#555;
+      background-color: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Responsive design */
+    @media (max-width: 600px) {
+      .logo-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+      .logo {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .logo-symbol {
+        font-size: 32px;
+      }
+      
+      .company-info h1 {
+        font-size: 28px;
+      }
+      
+      .project-buttons {
+        flex-direction: column;
+      }
+      
+      .project-buttons a {
+        text-align: center;
+      }
     }
   </style>
+
 </head>
 <body>
   <header>
-    <h1>Applied Information Services</h1>
-    <p>Research / Analysis / Consulting</p>
-    <p>Information Solutions For Complex Domains</p>
+    <div class="logo-container">
+      <div class="logo">
+        <div class="logo-symbol">A</div>
+      </div>
+      <div class="company-info">
+        <h1>Applied Information Services</h1>
+        <p class="tagline">Research / Analysis / Consulting</p>
+        <p class="description">Information Solutions For Complex Domains</p>
+      </div>
+    </div>
   </header>
 
- <h2>Our Services</h2>
-<div class="project-buttons">
-  <a href="jann.html">JANN</a>
-  <a href="crystal-peak.html">Crystal Peak</a>
-</div>
+  <h2>Our Services</h2>
+  <div class="project-buttons">
+    <a href="jann.html">JANN</a>
+    <a href="crystal-peak.html">Crystal Peak</a>
   </div>
 
   <footer>
