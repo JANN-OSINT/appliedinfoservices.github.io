@@ -126,6 +126,14 @@ letter-spacing: 1px;
 content: ‘// SERVICES_DIRECTORY’;
 }
 
+.jann-section::before {
+content: ‘// JANN_MODULE’;
+}
+
+.crystal-peak-section::before {
+content: ‘// CRYSTAL_PEAK_MODULE’;
+}
+
 /* Headings */
 h1 {
 font-size: clamp(24px, 4vw, 36px);
