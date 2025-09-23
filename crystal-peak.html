@@ -135,16 +135,14 @@
     <h2>Our Services – Crystal Peak</h2>
     <p>Crystal Peak is our knowledge base and research hub.</p>
 
-```
 <div class="project-buttons">
   <a href="https://publish.obsidian.md/crystal-peak" target="_blank" rel="noopener">Visit Crystal Peak</a>
-  <button class="toggle-button" onclick="toggleEmbed()">Embed View</button>
+  <button class="toggle-button" onclick="toggleEmbed()">Embeded Viewer</button>
 </div>
 
 <div id="embed-container" class="embed-container">
-  <div class="embed-loading">LOADING CRYSTAL PEAK...</div>
+  <div class="embed-loading">LOADING CRYSTAL PEAK VIEWER...</div>
 </div>
-```
 
   </div>
 
@@ -171,12 +169,12 @@
         // Hide embed
         container.classList.remove('active');
         button.classList.remove('active');
-        button.innerHTML = button.innerHTML.replace('Hide Embed', 'Embed View');
+        button.innerHTML = button.innerHTML.replace('Hide Embeded Viewer', 'Embeded Viewer');
       } else {
         // Show embed
         container.classList.add('active');
         button.classList.add('active');
-        button.innerHTML = button.innerHTML.replace('Embed View', 'Hide Embed');
+        button.innerHTML = button.innerHTML.replace('Embeded Viewer', 'Hide Embeded Viewer');
         
         // Load iframe only once
         if (!embedLoaded) {
