@@ -104,19 +104,6 @@ body {
   margin-bottom: 16px;
 }
 
-/* Blinking cursor */
-@keyframes blink {
-  0%, 50%  { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.hero h1::after {
-  content: '|';
-  color: var(--gold);
-  animation: blink 1.2s infinite;
-  font-weight: 300;
-  margin-left: 4px;
-}
 
 .hero-tagline {
   font-size: 12px;
