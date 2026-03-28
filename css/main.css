@@ -477,7 +477,31 @@ footer {
 
 .capabilities-strip {
   background: var(--color-nav);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+/* C-40 cheat line — horizontal double stripe with swept leading edge */
+.capabilities-strip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 9px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 87, 184, 0.80)   0px,
+    rgba(0, 87, 184, 0.80)   5px,     /* primary stripe: 5px */
+    rgba(255, 255, 255, 0.06) 5px,
+    rgba(255, 255, 255, 0.06) 6px,    /* 1px gap */
+    rgba(0, 87, 184, 0.55)   6px,
+    rgba(0, 87, 184, 0.55)   9px      /* secondary stripe: 3px */
+  );
+  /* Swept forward diagonal at leading edge — ~75° from horizontal */
+  clip-path: polygon(34px 0%, 100% 0%, 100% 100%, 0% 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .capabilities-inner {
@@ -787,4 +811,55 @@ button:focus-visible {
     transform: rotate(90deg);
     transform-origin: 24px center;
   }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--f1);
+    padding-bottom: var(--f4);
+  }
+
+  .footer-address {
+    text-align: left;
+  }
+
+  .capabilities-inner {
+    grid-template-columns: 1fr;
+    gap: var(--f4);
+    padding: var(--f4) var(--f3);
+  }
+
+  .services-list {
+    flex-direction: column;
+    gap: var(--f3);
+  }
+
+  .service-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .service-desc {
+    max-width: none;
+  }
+
+  .approach-section {
+    padding: var(--f5) var(--f3);
+  }
+
+  .approach-header {
+    margin-bottom: var(--f4);
+  }
+
+  .approach-track {
+    grid-template-columns: 1fr;
+  }
+
+  .approach-connector {
+    justify-content: flex-start;
+    padding: var(--f2) 0 var(--f2) var(--f3);
+    transform: rotate(90deg);
+    transform-origin: 24px center;
+  }
+
 }
