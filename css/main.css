@@ -481,27 +481,32 @@ footer {
   overflow: hidden;
 }
 
-/* C-40 cheat line — horizontal double stripe with swept leading edge */
+/* C-40 cheat line — right margin of capabilities strip, "\" leading edge */
 .capabilities-strip::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
+  bottom: 0;
+  left: calc(50% + 430px);   /* starts at right edge of 860px content column */
   right: 0;
-  height: 9px;
+  pointer-events: none;
+  z-index: 1;
+  /* Two horizontal stripes at ~45% from top of section */
   background: linear-gradient(
     to bottom,
-    rgba(0, 87, 184, 0.80)   0px,
-    rgba(0, 87, 184, 0.80)   5px,     /* primary stripe: 5px */
-    rgba(255, 255, 255, 0.06) 5px,
-    rgba(255, 255, 255, 0.06) 6px,    /* 1px gap */
-    rgba(0, 87, 184, 0.55)   6px,
-    rgba(0, 87, 184, 0.55)   9px      /* secondary stripe: 3px */
+    transparent                   0%,
+    transparent                   calc(45% - 6px),
+    rgba(0, 87, 184, 0.85)        calc(45% - 6px),
+    rgba(0, 87, 184, 0.85)        calc(45% + 2px),   /* 8px primary stripe */
+    rgba(255, 255, 255, 0.08)     calc(45% + 2px),
+    rgba(255, 255, 255, 0.08)     calc(45% + 3px),   /* 1px gap */
+    rgba(0, 87, 184, 0.60)        calc(45% + 3px),
+    rgba(0, 87, 184, 0.60)        calc(45% + 8px),   /* 5px secondary stripe */
+    transparent                   calc(45% + 8px),
+    transparent                   100%
   );
-  /* Swept forward diagonal at leading edge — ~75° from horizontal */
-  clip-path: polygon(34px 0%, 100% 0%, 100% 100%, 0% 100%);
-  pointer-events: none;
-  z-index: 2;
+  /* "\" swept angle — top-left flush, bottom-left inset 55px */
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, var(--f5) 100%);
 }
 
 .capabilities-inner {
@@ -860,6 +865,10 @@ button:focus-visible {
     padding: var(--f2) 0 var(--f2) var(--f3);
     transform: rotate(90deg);
     transform-origin: 24px center;
+  }
+
+  .capabilities-strip::before {
+    display: none;
   }
 
 }
