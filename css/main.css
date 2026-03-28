@@ -414,13 +414,13 @@ footer::before {
     to bottom,
     transparent                   0%,
     transparent                   calc(42% - 6px),
-    rgba(0, 87, 184, 0.85)        calc(42% - 6px),
-    rgba(0, 87, 184, 0.85)        calc(42% + 2px),   /* 8px primary stripe */
-    rgba(255, 255, 255, 0.08)     calc(42% + 2px),
-    rgba(255, 255, 255, 0.08)     calc(42% + 3px),   /* 1px gap */
-    rgba(0, 87, 184, 0.60)        calc(42% + 3px),
-    rgba(0, 87, 184, 0.60)        calc(42% + 8px),   /* 5px secondary stripe */
-    transparent                   calc(42% + 8px),
+    rgba(0, 87, 184, 0.60)        calc(42% - 6px),
+    rgba(0, 87, 184, 0.60)        calc(42% - 1px),   /* 5px thin stripe on top */
+    transparent                   calc(42% - 1px),
+    transparent                   calc(42% + 2px),   /* 3px gap */
+    rgba(0, 87, 184, 0.85)        calc(42% + 2px),
+    rgba(0, 87, 184, 0.85)        calc(42% + 10px),  /* 8px thick stripe below */
+    transparent                   calc(42% + 10px),
     transparent                   100%
   );
   /* "\" left edge + "/" right edge — both taper inward at bottom */
