@@ -1,3 +1,11 @@
+/*
+ * Spacing scale — Fibonacci sequence (px)
+ * f1=8  f2=13  f3=21  f4=34  f5=55  f6=89  f7=144
+ *
+ * Type scale — Fibonacci-adjacent
+ * 13px · 21px · 34px · 55px
+ */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,7 +23,6 @@
   --color-primary:        #0057b8;
   --color-primary-dark:   #003d82;
   --color-accent:         #c9a84c;
-  --color-accent-dark:    #a8892e;
 
   /* Surfaces */
   --color-surface:        #ffffff;
@@ -35,16 +42,22 @@
   --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 6px rgba(10, 22, 40, 0.08);
-  --shadow-md: 0 4px 16px rgba(10, 22, 40, 0.14);
+  /* Fibonacci spacing tokens */
+  --f1:  8px;
+  --f2:  13px;
+  --f3:  21px;
+  --f4:  34px;
+  --f5:  55px;
+  --f6:  89px;
+  --f7:  144px;
 }
 
 body {
   font-family: var(--font-sans);
+  font-size: var(--f2);          /* 13px base */
   color: var(--color-text-primary);
   background: var(--color-surface-alt);
-  line-height: 1.6;
+  line-height: 1.618;            /* golden ratio line-height */
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -53,31 +66,34 @@ body {
 
 .nav-bar {
   background: var(--color-nav);
-  padding: 0 40px;
-  height: 64px;
+  padding: 0 var(--f5);          /* 0 55px */
+  height: var(--f5);             /* 55px — Fibonacci */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--f3);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .nav-company {
-  font-size: 14px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 700;
   color: var(--color-text-nav);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-family: var(--font-sans);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-company:hover {
+  color: var(--color-accent);
 }
 
 .nav-contact {
-  font-size: 12px;
+  font-size: var(--f2);          /* 13px */
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  letter-spacing: 0.05em;
 }
 
 .nav-contact a {
@@ -97,66 +113,50 @@ body {
   background-image:
     linear-gradient(rgba(0, 87, 184, 0.07) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 87, 184, 0.07) 1px, transparent 1px);
-  background-size: 60px 60px;
-  padding: 72px 40px 64px;
-  position: relative;
+  background-size: var(--f5) var(--f5);  /* 55px grid */
+  padding: var(--f6) var(--f5);          /* 89px 55px */
 }
 
 .hero-inner {
   max-width: 860px;
   margin: 0 auto;
-  position: relative;
 }
 
-/* Vertical gold bar above eyebrow */
+/* Vertical gold bar */
 .hero-inner::before {
   content: '';
   display: block;
   width: 3px;
-  height: 40px;
+  height: var(--f4);             /* 34px */
   background: var(--color-accent);
-  margin-bottom: 20px;
-}
-
-.hero-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--color-accent);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 20px;
-  display: block;
+  margin-bottom: var(--f3);      /* 21px */
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: var(--f5);          /* 55px — Fibonacci */
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.1;
-  margin-bottom: 20px;
-  font-family: var(--font-sans);
+  margin-bottom: var(--f3);      /* 21px */
 }
 
 .hero-tagline {
-  font-size: 12px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 400;
   color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.25em;
-  margin-bottom: 20px;
+  margin-bottom: var(--f3);      /* 21px */
   display: block;
-  font-family: var(--font-sans);
 }
 
 .hero-desc {
-  font-size: 15px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 300;
   color: rgba(232, 236, 244, 0.82);
   max-width: 500px;
-  line-height: 1.7;
-  font-family: var(--font-sans);
+  line-height: 1.618;
 }
 
 /* ── Page content wrapper ────────────────────────────────────────────── */
@@ -164,34 +164,20 @@ body {
 .page-content {
   max-width: 860px;
   margin: 0 auto;
-  padding: 40px 40px 60px;
-}
-
-/* ── Section labels ──────────────────────────────────────────────────── */
-
-.section-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 18px;
-  display: block;
+  padding: var(--f4) var(--f5) var(--f6);  /* 34px 55px 89px */
 }
 
 /* ── Headings ────────────────────────────────────────────────────────── */
 
 h2 {
-  font-size: 18px;
+  font-size: var(--f4);          /* 34px — Fibonacci */
   font-weight: 700;
   color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 28px;
-  padding-bottom: 14px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: var(--f3);      /* 21px */
+  padding-bottom: var(--f2);     /* 13px */
   position: relative;
-  font-family: var(--font-sans);
 }
 
 h2::after {
@@ -199,29 +185,25 @@ h2::after {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 48px;
+  width: var(--f4);              /* 34px — Fibonacci */
   height: 3px;
   background: var(--color-primary);
 }
 
 h3 {
-  font-size: 15px;
+  font-size: var(--f3);          /* 21px — Fibonacci */
   font-weight: 700;
   color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 24px 0 12px;
-  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  margin: var(--f4) 0 var(--f2); /* 34px 0 13px */
 }
 
 p {
-  font-size: 15px;
-  font-weight: 400;
+  font-size: var(--f2);          /* 13px */
   color: var(--color-text-secondary);
-  line-height: 1.75;
+  line-height: 1.618;
   max-width: 680px;
-  margin: 12px 0;
-  font-family: var(--font-sans);
+  margin: var(--f2) 0;           /* 13px */
 }
 
 /* ── Content sections ────────────────────────────────────────────────── */
@@ -230,18 +212,18 @@ p {
   background: var(--color-surface);
   border: 1px solid var(--color-border-subtle);
   border-top: 3px solid var(--color-border-accent);
-  padding: 36px 40px;
-  margin-bottom: 28px;
-  box-shadow: var(--shadow-sm);
+  padding: var(--f5) var(--f5);  /* 55px 55px */
+  margin-bottom: var(--f4);      /* 34px */
+  box-shadow: 0 2px 8px rgba(10, 22, 40, 0.07);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────── */
 
 .project-buttons {
   display: flex;
-  gap: 14px;
+  gap: var(--f2);                /* 13px */
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: var(--f3);         /* 21px */
 }
 
 .project-buttons a,
@@ -249,19 +231,19 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 28px;
+  padding: var(--f2) var(--f4);  /* 13px 34px */
   background: var(--color-primary);
   color: #ffffff;
   text-decoration: none;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border: none;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  min-width: 150px;
+  min-width: var(--f7);          /* 144px — Fibonacci */
   text-align: center;
   border-radius: 2px;
 }
@@ -269,7 +251,7 @@ p {
 .project-buttons a:hover,
 .project-buttons button:hover {
   background: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgba(0, 87, 184, 0.3);
+  box-shadow: 0 var(--f1) var(--f3) rgba(0, 87, 184, 0.3); /* 0 8px 21px */
 }
 
 .project-buttons a:active,
@@ -285,25 +267,25 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 28px;
+  padding: var(--f2) var(--f4);  /* 13px 34px */
   background: transparent;
   color: var(--color-primary);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--f2);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border: 2px solid var(--color-primary);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  min-width: 150px;
+  min-width: var(--f7);          /* 144px */
   border-radius: 2px;
 }
 
 .toggle-button::before {
   content: '▼';
   font-size: 9px;
-  margin-right: 8px;
+  margin-right: var(--f1);       /* 8px */
   display: inline-block;
   transition: transform 0.3s;
 }
@@ -320,11 +302,10 @@ p {
 /* ── Embed container ─────────────────────────────────────────────────── */
 
 .embed-container {
-  margin: 24px 0 0;
+  margin-top: var(--f3);         /* 21px */
   border: 1px solid var(--color-border-subtle);
   border-top: 3px solid var(--color-primary);
   background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
   overflow: hidden;
   display: none;
 }
@@ -347,10 +328,10 @@ p {
 }
 
 .embed-loading {
-  padding: 40px;
+  padding: var(--f5);            /* 55px */
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--f2);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -359,11 +340,10 @@ p {
 /* ── Breadcrumb ──────────────────────────────────────────────────────── */
 
 .crumb {
-  font-size: 12px;
-  margin-bottom: 20px;
+  font-size: var(--f2);          /* 13px */
+  margin-bottom: var(--f3);      /* 21px */
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-family: var(--font-sans);
   font-weight: 600;
 }
 
@@ -380,12 +360,11 @@ p {
 /* ── Substack embed ──────────────────────────────────────────────────── */
 
 .substack-embed {
-  margin: 24px 0;
+  margin: var(--f4) 0;           /* 34px */
 }
 
 .substack-embed iframe {
   border: 1px solid var(--color-border-subtle);
-  box-shadow: var(--shadow-sm);
   max-width: 100%;
 }
 
@@ -394,8 +373,7 @@ p {
 footer {
   background: var(--color-footer);
   border-top: 3px solid var(--color-primary);
-  padding: 48px 40px 0;
-  font-family: var(--font-sans);
+  padding: var(--f5) var(--f5) 0;  /* 55px 55px 0 */
 }
 
 .footer-grid {
@@ -403,58 +381,48 @@ footer {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 40px;
-  padding-bottom: 40px;
-}
-
-.footer-col-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 16px;
-  display: block;
+  gap: var(--f5);                /* 55px */
+  padding-bottom: var(--f5);     /* 55px */
 }
 
 .footer-company-name {
-  font-size: 14px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 700;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  margin-bottom: 8px;
+  margin-bottom: var(--f1);      /* 8px */
 }
 
 .footer-company-tagline {
-  font-size: 11px;
+  font-size: var(--f2);          /* 13px */
   font-weight: 400;
   color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  margin-bottom: 10px;
+  margin-bottom: var(--f2);      /* 13px */
 }
 
 .footer-company-desc {
-  font-size: 12px;
+  font-size: var(--f2);          /* 13px */
   color: var(--color-text-muted);
-  line-height: 1.6;
+  line-height: 1.618;
 }
 
 .footer-links {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--f2);                /* 13px */
+  padding-top: var(--f1);        /* 8px */
 }
 
 .footer-links a {
-  font-size: 13px;
+  font-size: var(--f2);          /* 13px */
   color: var(--color-text-nav);
   text-decoration: none;
   letter-spacing: 0.05em;
   transition: color 0.2s;
-  font-weight: 400;
 }
 
 .footer-links a:hover {
@@ -464,28 +432,26 @@ footer {
 .footer-bottom {
   max-width: 860px;
   margin: 0 auto;
-  padding: 16px 0;
+  padding: var(--f2) 0 var(--f4);  /* 13px 0 34px */
   border-top: 1px solid var(--color-footer-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: var(--f3);
 }
 
-.footer-copyright {
+.footer-copyright,
+.footer-address {
   font-size: 11px;
   color: var(--color-text-muted);
   line-height: 1.5;
 }
 
 .footer-address {
-  font-size: 11px;
-  color: var(--color-text-muted);
   text-align: right;
-  line-height: 1.5;
 }
 
-/* ── Focus styles ────────────────────────────────────────────────────── */
+/* ── Focus ───────────────────────────────────────────────────────────── */
 
 a:focus-visible,
 button:focus-visible {
@@ -500,24 +466,24 @@ button:focus-visible {
     flex-direction: column;
     height: auto;
     align-items: flex-start;
-    padding: 14px 20px;
-    gap: 6px;
+    padding: var(--f2) var(--f3);   /* 13px 21px */
+    gap: var(--f1);
   }
 
   .hero {
-    padding: 48px 20px 44px;
+    padding: var(--f5) var(--f3);   /* 55px 21px */
   }
 
   .hero h1 {
-    font-size: 1.75rem;
+    font-size: var(--f4);           /* 34px */
   }
 
   .page-content {
-    padding: 28px 20px 48px;
+    padding: var(--f3) var(--f3) var(--f5);  /* 21px 21px 55px */
   }
 
   .content-section {
-    padding: 24px 20px;
+    padding: var(--f4) var(--f3);   /* 34px 21px */
   }
 
   .project-buttons {
@@ -532,20 +498,20 @@ button:focus-visible {
   }
 
   footer {
-    padding: 40px 20px 0;
+    padding: var(--f4) var(--f3) 0;  /* 34px 21px 0 */
   }
 
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: 28px;
-    padding-bottom: 32px;
+    gap: var(--f4);              /* 34px */
+    padding-bottom: var(--f4);
   }
 
   .footer-bottom {
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    padding: 16px 0 24px;
+    gap: var(--f1);
+    padding-bottom: var(--f4);
   }
 
   .footer-address {
