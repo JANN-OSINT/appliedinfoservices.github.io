@@ -424,7 +424,33 @@ footer::before {
     transparent                   100%
   );
   /* "\" left edge + "/" right edge — both taper inward at bottom */
-  clip-path: polygon(0% 0%, 100% 0%, calc(100% - var(--f5)) 100%, var(--f5) 100%);
+  clip-path: polygon(0% 0%, 100% 0%, calc(100% - var(--f6)) 100%, var(--f6) 100%);
+}
+
+/* C-40 cheat line — left margin mirror */
+footer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: calc(50% + 430px);
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent                   0%,
+    transparent                   calc(42% - 6px),
+    rgba(0, 87, 184, 0.60)        calc(42% - 6px),
+    rgba(0, 87, 184, 0.60)        calc(42% - 1px),
+    transparent                   calc(42% - 1px),
+    transparent                   calc(42% + 2px),
+    rgba(0, 87, 184, 0.85)        calc(42% + 2px),
+    rgba(0, 87, 184, 0.85)        calc(42% + 10px),
+    transparent                   calc(42% + 10px),
+    transparent                   100%
+  );
+  clip-path: polygon(0% 0%, 100% 0%, calc(100% - var(--f6)) 100%, var(--f6) 100%);
 }
 
 .footer-grid {
@@ -866,7 +892,8 @@ button:focus-visible {
     transform-origin: 24px center;
   }
 
-  footer::before {
+  footer::before,
+  footer::after {
     display: none;
   }
 
