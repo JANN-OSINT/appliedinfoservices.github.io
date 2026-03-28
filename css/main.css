@@ -451,32 +451,6 @@ footer {
   text-align: right;
 }
 
-/* ── Products section / Coming Soon ribbon ───────────────────────────── */
-
-.products-section {
-  position: relative;
-  overflow: hidden;
-}
-
-.coming-soon-ribbon {
-  position: absolute;
-  top: var(--f4);                        /* 34px */
-  right: calc(-1 * var(--f5));           /* -55px */
-  width: var(--f7);                      /* 144px */
-  transform: rotate(45deg);
-  background: var(--color-accent);
-  color: var(--color-nav);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  text-align: center;
-  padding: var(--f1) 0;                  /* 8px 0 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-}
-
 /* ── Focus ───────────────────────────────────────────────────────────── */
 
 a:focus-visible,
