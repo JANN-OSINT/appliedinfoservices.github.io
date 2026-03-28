@@ -109,12 +109,34 @@ body {
 /* ── Hero ────────────────────────────────────────────────────────────── */
 
 .hero {
-  background: var(--color-hero);
+  background-color: var(--color-hero);
   background-image:
-    linear-gradient(rgba(0, 87, 184, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 87, 184, 0.07) 1px, transparent 1px);
-  background-size: var(--f5) var(--f5);  /* 55px grid */
-  padding: var(--f6) var(--f5);          /* 89px 55px */
+    linear-gradient(135deg, rgba(10,22,40,0.88) 0%, rgba(13,31,60,0.72) 60%, rgba(0,87,184,0.15) 100%),
+    linear-gradient(rgba(0,87,184,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,87,184,0.07) 1px, transparent 1px),
+    url('https://images.unsplash.com/photo-1446776877081-d282a0f896e2?auto=format&fit=crop&w=1400&q=80');
+  background-size: auto, var(--f5) var(--f5), var(--f5) var(--f5), cover;
+  background-position: center, 0 0, 0 0, center;
+  background-repeat: no-repeat, repeat, repeat, no-repeat;
+  padding: var(--f6) var(--f5);
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.4) 20%,
+    rgba(201, 168, 76, 0.7) 50%,
+    rgba(201, 168, 76, 0.4) 80%,
+    transparent 100%
+  );
 }
 
 .hero-inner {
@@ -451,6 +473,101 @@ footer {
   text-align: right;
 }
 
+/* ── Capabilities strip ──────────────────────────────────────────────── */
+
+.capabilities-strip {
+  background: var(--color-nav);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.capabilities-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--f5) var(--f5);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--f5);
+}
+
+.capability-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--f2);
+}
+
+.capability-label {
+  font-size: var(--f2);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  line-height: 1.2;
+}
+
+.capability-desc {
+  font-size: var(--f2);
+  color: rgba(232, 236, 244, 0.7);
+  line-height: 1.618;
+  max-width: none;
+  margin: 0;
+}
+
+/* ── Services list (homepage) ────────────────────────────────────────── */
+
+.services-list {
+  display: flex;
+  gap: var(--f4);
+  flex-wrap: wrap;
+  margin-top: var(--f3);
+  align-items: flex-start;
+}
+
+.service-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--f1);
+}
+
+.service-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--f2) var(--f4);
+  background: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: var(--f2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  min-width: var(--f7);
+  text-align: center;
+  border-radius: 2px;
+}
+
+.service-btn:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 var(--f1) var(--f3) rgba(0, 87, 184, 0.3);
+}
+
+.service-btn:active {
+  background: #002d6b;
+  box-shadow: none;
+  transform: translateY(1px);
+}
+
+.service-desc {
+  font-size: var(--f2);
+  color: var(--color-text-muted);
+  line-height: 1.618;
+  max-width: 180px;
+  margin: 0;
+}
+
 /* ── Focus ───────────────────────────────────────────────────────────── */
 
 a:focus-visible,
@@ -516,5 +633,25 @@ button:focus-visible {
 
   .footer-address {
     text-align: left;
+  }
+
+  .capabilities-inner {
+    grid-template-columns: 1fr;
+    gap: var(--f4);
+    padding: var(--f4) var(--f3);
+  }
+
+  .services-list {
+    flex-direction: column;
+    gap: var(--f3);
+  }
+
+  .service-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .service-desc {
+    max-width: none;
   }
 }
