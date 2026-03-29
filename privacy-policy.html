@@ -4,12 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy - Applied Information Services</title>
+  <meta name="description" content="Privacy Policy | Applied Information Services">
+  <title>Privacy Policy | Applied Information Services</title>
 
   <!-- Google tag (gtag.js) -->
-
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
-
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -19,67 +18,35 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3">
-
-  <style>
-    /* Legal document specific styles */
-    .legal-section::before {
-      content: '// PRIVACY_POLICY';
-    }
-    
-    .legal-content h1 {
-      color: #333;
-      font-size: 24px;
-      margin: 0 0 24px 0;
-    }
-    
-    .legal-content p {
-      margin: 16px 0;
-      line-height: 1.6;
-    }
-  </style>
-
+  <link rel="stylesheet" href="css/main.css?v=11">
 </head>
 <body>
-  <div class="crumb"><a href="index.html">← Back to Home</a></div>
-
   <div id="header-placeholder"></div>
 
-  <div class="content-section legal-section">
-    <div class="legal-content">
-      <h1>Privacy Policy</h1>
-      <p>
-        Applied Information Services LLC ("Applied," "we," "our," or "us") respects your privacy. 
-        We collect only the information necessary to provide our services, such as contact details 
-        and payment information when applicable.
-      </p>
+  <div class="page-content">
+    <div class="crumb"><a href="index.html">← Back to Home</a></div>
 
-  <p>
-    All payment processing is securely handled by third-party providers (e.g., Stripe). Applied 
-    does not sell or share personal data with outside parties except as required by law or to 
-    provide our services.
-  </p>
-
-  <p>
-    By using our websites or services, you consent to this Privacy Policy. Updates may be made 
-    periodically, and continued use constitutes acceptance of any changes.
-  </p>
-</div>
-
+    <div class="content-section">
+      <h2>Privacy Policy</h2>
+      <p>Applied Information Services, LLC is committed to protecting the privacy of visitors to this website. A full Privacy Policy governing data collection, use, and cross-border transfers is currently in preparation and will be published here. For privacy-related inquiries, please contact: <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a></p>
+    </div>
   </div>
 
   <div id="footer-placeholder"></div>
 
   <script>
-    // Load header and footer
     fetch('includes/header.html')
       .then(response => response.text())
       .then(data => document.getElementById('header-placeholder').innerHTML = data);
-    
+
     fetch('includes/footer.html')
       .then(response => response.text())
-      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+        document.querySelectorAll('.ais-copyright-year').forEach(el => {
+          el.textContent = new Date().getFullYear();
+        });
+      });
   </script>
-
 </body>
 </html>

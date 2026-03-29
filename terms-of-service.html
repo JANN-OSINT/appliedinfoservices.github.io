@@ -19,7 +19,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3">
+  <link rel="stylesheet" href="css/main.css?v=11">
 
   <style>
     /* Legal document specific styles */
@@ -99,7 +99,12 @@
     
     fetch('includes/footer.html')
       .then(response => response.text())
-      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+        document.querySelectorAll('.ais-copyright-year').forEach(el => {
+          el.textContent = new Date().getFullYear();
+        });
+      });
   </script>
 
 </body>

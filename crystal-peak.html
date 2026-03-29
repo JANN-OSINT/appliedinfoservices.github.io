@@ -20,7 +20,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3">
+  <link rel="stylesheet" href="css/main.css?v=11">
 
 </head>
 <body>
@@ -31,6 +31,11 @@
 
     <div class="content-section crystal-peak-section">
       <h2>Crystal Peak</h2>
+
+      <div class="site-notice">
+        <p>Crystal Peak is a curated open-source research index drawing exclusively on publicly available sources. It does not contain sensitive, proprietary, classified, or export-controlled information. Content reflects the analytical work of AIS and does not constitute professional advice of any kind. Reproduction or redistribution without written permission is prohibited. Access does not imply an advisory relationship with AIS.</p>
+      </div>
+
       <p>Crystal Peak is our knowledge base and research hub.</p>
 
       <div class="project-buttons">
@@ -54,7 +59,12 @@
     
     fetch('includes/footer.html')
       .then(response => response.text())
-      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+        document.querySelectorAll('.ais-copyright-year').forEach(el => {
+          el.textContent = new Date().getFullYear();
+        });
+      });
 
     // Toggle embed functionality
     let embedLoaded = false;
