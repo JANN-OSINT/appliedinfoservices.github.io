@@ -27,8 +27,44 @@
     <div class="crumb"><a href="index.html">← Back to Home</a></div>
 
     <div class="content-section">
+
       <h2>Privacy Policy</h2>
-      <p>Applied Information Services, LLC is committed to protecting the privacy of visitors to this website. A full Privacy Policy governing data collection, use, and cross-border transfers is currently in preparation and will be published here. For privacy-related inquiries, please contact: <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a></p>
+      <p style="color: var(--color-text-muted); font-size: 11px; margin-top: 0;">Last updated: <span id="last-updated"></span> &nbsp;&middot;&nbsp; Applied Information Services, LLC</p>
+
+      <p>Applied Information Services, LLC (&ldquo;AIS,&rdquo; &ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting the privacy of visitors to this website. This Privacy Policy describes what information we collect, how we use it, and your rights with respect to that information.</p>
+      <p>A comprehensive Privacy Policy addressing data retention schedules, cross-border transfer mechanisms, and full regulatory disclosures is currently in preparation. This page reflects current practices in the interim.</p>
+
+      <h3>Information We Collect</h3>
+      <p>We may collect the following categories of information:</p>
+      <p><strong>Information you provide directly.</strong> When you submit the consultation request form on this site, we collect your name, organization, email address, phone number (if provided), and the details of your inquiry. This information is transmitted to and stored by Formspree, Inc., our form processing provider.</p>
+      <p><strong>Automatically collected information.</strong> We use Google Analytics (via Google Tag Manager, ID: G-CWY00FKP9J) to collect standard web analytics data including pages visited, time on site, browser type, device type, and approximate geographic location derived from IP address. This data is collected in aggregate and is not directly linked to your identity.</p>
+      <p><strong>Communications.</strong> If you contact us by email, we retain the content of that correspondence.</p>
+
+      <h3>How We Use Your Information</h3>
+      <p>We use collected information to respond to consultation inquiries, improve the website, and understand how visitors use our services. We do not sell, rent, or share personal information with third parties for marketing purposes.</p>
+
+      <h3>Third-Party Services</h3>
+      <p><strong>Formspree.</strong> Consultation form submissions are processed by Formspree, Inc. Formspree's privacy policy governs the handling of data submitted through their platform.</p>
+      <p><strong>Google Analytics.</strong> Website usage data is collected by Google LLC via Google Analytics. Google's privacy policy governs that data. Visitors in the EU/UK should be aware that this constitutes a transfer of personal data to the United States. A cookie consent mechanism is currently in preparation.</p>
+      <p><strong>Substack.</strong> The JANN newsletter is published and managed on Substack. If you subscribe to JANN, your subscription data is governed by Substack's Terms of Use and Privacy Policy.</p>
+      <p><strong>Stripe.</strong> Payment processing for consultation fees is handled by Stripe, Inc. AIS does not store payment card information. Stripe's privacy policy governs payment data.</p>
+
+      <h3>Data Retention</h3>
+      <p>We retain consultation inquiry data for as long as necessary to respond to and manage the engagement. Web analytics data is retained per Google Analytics' default retention settings. A formal retention schedule will be published with the full Privacy Policy.</p>
+
+      <h3>Your Rights</h3>
+      <p>Depending on your jurisdiction, you may have rights to access, correct, delete, or restrict processing of your personal data. To exercise any such rights or to make a privacy-related inquiry, contact us at <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a>.</p>
+
+      <h3>Cookies</h3>
+      <p>This website uses cookies set by Google Analytics for usage tracking. A cookie consent banner is currently in preparation. Until it is implemented, by continuing to use this site you acknowledge the use of analytics cookies.</p>
+
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy periodically. Continued use of this website following any update constitutes acceptance of the revised policy. The &ldquo;Last updated&rdquo; date at the top of this page reflects the most recent revision.</p>
+
+      <h3>Contact</h3>
+      <p>For privacy-related inquiries: <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a></p>
+      <p>Applied Information Services, LLC &middot; 1001 S Main St Ste 11354 &middot; Kalispell, MT 59901</p>
+
     </div>
   </div>
 
@@ -47,6 +83,9 @@
           el.textContent = new Date().getFullYear();
         });
       });
+
+    document.getElementById('last-updated').textContent =
+      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   </script>
 </body>
 </html>

@@ -27,8 +27,43 @@
     <div class="crumb"><a href="index.html">← Back to Home</a></div>
 
     <div class="content-section">
+
       <h2>Terms of Use</h2>
-      <p>Terms of Use for this website and AIS products, including Crystal Peak and JANN/The AEROSINT, are currently in preparation and will be published here. By accessing this website, you agree that your use is subject to applicable U.S. law and the legal notices contained in the footer of this site. For inquiries, contact: <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a></p>
+      <p style="color: var(--color-text-muted); font-size: 11px; margin-top: 0;">Last updated: <span id="last-updated"></span> &nbsp;&middot;&nbsp; Applied Information Services, LLC</p>
+
+      <p>These Terms of Use (&ldquo;Terms&rdquo;) govern your access to and use of the website, products, and services operated by Applied Information Services, LLC (&ldquo;AIS,&rdquo; &ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;), including Crystal Peak and JANN/The AEROSINT. By accessing this website or using any AIS service, you agree to be bound by these Terms. If you do not agree, do not use this website or its services.</p>
+
+      <h3>Use of This Website</h3>
+      <p>This website is provided for informational purposes. You agree to use it only for lawful purposes and in a manner consistent with applicable U.S. and international law. You may not use this site to transmit unlawful, harmful, or fraudulent content, or in any manner that could damage, disable, or impair the site or interfere with other users.</p>
+
+      <h3>Informational Purpose Only</h3>
+      <p>The content published on this website and through AIS products — including Crystal Peak and JANN/The AEROSINT — is provided for informational and research purposes only. Nothing on this site constitutes legal, regulatory, tax, financial, investment, or professional advice of any kind. No advisory or fiduciary relationship is created by accessing this website or contacting AIS.</p>
+
+      <h3>Intellectual Property</h3>
+      <p>All content on this website, including text, analysis, design, code, and product identifiers, is the property of Applied Information Services, LLC. JANN, The AEROSINT, and Crystal Peak are identifiers of Applied Information Services, LLC. Reproduction, redistribution, or commercial use of any content without prior written permission from AIS is prohibited.</p>
+
+      <h3>Export Control &amp; Sanctions Compliance</h3>
+      <p>Use of this website and AIS services is subject to applicable U.S. law, including the International Traffic in Arms Regulations (ITAR), Export Administration Regulations (EAR), and sanctions programs administered by the Office of Foreign Assets Control (OFAC). Services are not available to persons or entities in jurisdictions subject to U.S. sanctions or to persons on applicable restricted party lists. AIS reserves the right to decline or restrict access based on compliance requirements.</p>
+
+      <h3>Third-Party Links &amp; References</h3>
+      <p>This website may contain links to third-party websites or reference third-party organizations, products, or U.S. government programs. Such references do not imply endorsement by or affiliation with those entities, nor do they imply U.S. government endorsement of AIS or its services. AIS is not responsible for the content or practices of any third-party site.</p>
+
+      <h3>Disclaimer of Warranties</h3>
+      <p>This website and all content are provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement. AIS does not warrant that the site will be uninterrupted, error-free, or free of viruses or other harmful components.</p>
+
+      <h3>Limitation of Liability</h3>
+      <p>To the fullest extent permitted by applicable law, AIS shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of, or inability to use, this website or any AIS service, even if AIS has been advised of the possibility of such damages.</p>
+
+      <h3>Governing Law</h3>
+      <p>These Terms are governed by the laws of the State of Montana, without regard to its conflict of law provisions. Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the courts located in Flathead County, Montana.</p>
+
+      <h3>Changes to These Terms</h3>
+      <p>AIS may update these Terms at any time. Continued use of this website following any update constitutes acceptance of the revised Terms. The &ldquo;Last updated&rdquo; date at the top of this page reflects the most recent revision.</p>
+
+      <h3>Contact</h3>
+      <p>For questions regarding these Terms: <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a></p>
+      <p>Applied Information Services, LLC &middot; 1001 S Main St Ste 11354 &middot; Kalispell, MT 59901</p>
+
     </div>
   </div>
 
@@ -47,6 +82,9 @@
           el.textContent = new Date().getFullYear();
         });
       });
+
+    document.getElementById('last-updated').textContent =
+      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   </script>
 </body>
 </html>
