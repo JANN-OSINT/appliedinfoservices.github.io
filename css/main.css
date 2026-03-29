@@ -1265,6 +1265,66 @@ footer::after {
   max-width: none;
 }
 
+/* ── Legal / Compliance footer disclaimer ────────────────────────────── */
+
+.footer-disclaimer {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--f4) 0 var(--f3);
+  border-top: 1px solid var(--color-footer-border);
+}
+
+.footer-disclaimer-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--f2);
+}
+
+.footer-disclaimer p {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.618;
+  max-width: none;
+  margin: var(--f1) 0 0;
+}
+
+.footer-disclaimer-links {
+  margin-top: var(--f2);
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.footer-disclaimer-links a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-disclaimer-links a:hover {
+  color: var(--color-accent);
+}
+
+/* ── Page-level notice box (Crystal Peak, JANN) ──────────────────────── */
+
+.site-notice {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-border-accent);
+  padding: var(--f3) var(--f4);
+  margin-bottom: var(--f4);
+}
+
+.site-notice p {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.618;
+  max-width: none;
+  margin: 0;
+}
+
 /* ── Focus ───────────────────────────────────────────────────────────── */
 
 a:focus-visible,

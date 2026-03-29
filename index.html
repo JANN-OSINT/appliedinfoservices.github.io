@@ -29,16 +29,16 @@
   <section class="capabilities-strip">
     <div class="capabilities-inner">
       <div class="capability-col">
-        <span class="capability-label">Intelligence Collection</span>
-        <p class="capability-desc">Open-source intelligence gathering across aerospace, defense, and government domains.</p>
+        <span class="capability-label">Open-Source Research &amp; Monitoring</span>
+        <p class="capability-desc">Open-source research and monitoring across aerospace, defense, and government domains.</p>
       </div>
       <div class="capability-col">
-        <span class="capability-label">Analysis &amp; Synthesis</span>
-        <p class="capability-desc">Multi-source data analysis and structured reporting for decision advantage.</p>
+        <span class="capability-label">Structured Analysis &amp; Synthesis</span>
+        <p class="capability-desc">Structured multi-source analysis and synthesis to surface decision-ready insights.</p>
       </div>
       <div class="capability-col">
-        <span class="capability-label">Strategic Consulting</span>
-        <p class="capability-desc">Expert advisory services tailored to complex operational and technical challenges.</p>
+        <span class="capability-label">Advisory &amp; Strategic Consulting</span>
+        <p class="capability-desc">Expert advisory services tailored to complex technical and organizational challenges, delivered in compliance with applicable U.S. law.</p>
       </div>
     </div>
   </section>
@@ -214,7 +214,7 @@
 
     <div class="content-section products-section">
       <h2>Our Products</h2>
-      <p>We develop tailored products built around your operational requirements. Contact us so we can provide the best solution to fit your needs.</p>
+      <p>We develop tailored research and advisory products aligned to your mission requirements. All engagements are subject to applicable U.S. export control laws, sanctions regulations, and compliance requirements. Contact us to discuss how we can support your needs.</p>
       <div class="project-buttons" style="margin-top: var(--f3);">
         <a href="mailto:info@appliedinformationservices.com">Contact Us</a>
       </div>
@@ -304,7 +304,12 @@
     // Load footer
     fetch('includes/footer.html')
       .then(response => response.text())
-      .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+        document.querySelectorAll('.ais-copyright-year').forEach(el => {
+          el.textContent = new Date().getFullYear();
+        });
+      });
 
     // Consultation form — show confirmation on submit
     document.getElementById('consultation-form').addEventListener('submit', function(e) {
