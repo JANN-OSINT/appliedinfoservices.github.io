@@ -1,18 +1,34 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { MapStage } from "./components/MapStage";
 import { ControlPanel } from "./components/ControlPanel";
 import { ExportButton } from "./components/ExportButton";
 import { DEFAULT_CONFIG, type AppConfig } from "./lib/config";
+import { useDebounced } from "./lib/useDebounced";
 
 export default function App() {
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const stageRef = useRef<HTMLDivElement>(null);
   const [lastError, setLastError] = useState<string | null>(null);
 
+  // Debounce the heavy parts (routes, colors, animation) but keep viewport
+  // and theme live so panning/zooming the map stays responsive.
+  const debouncedConfig = useDebounced(config, 200);
+  const mapConfig = useMemo<AppConfig>(
+    () => ({
+      ...debouncedConfig,
+      // These three must be instant: panning, theme flips, and control
+      // visibility should not wait 200ms.
+      viewport: config.viewport,
+      theme: config.theme,
+      showMapControls: config.showMapControls,
+    }),
+    [debouncedConfig, config.viewport, config.theme, config.showMapControls],
+  );
+
   return (
     <div className="apv-layout">
       <div className="apv-stage" ref={stageRef}>
-        <MapStage config={config} onConfigChange={setConfig} onError={setLastError} />
+        <MapStage config={mapConfig} onConfigChange={setConfig} onError={setLastError} />
       </div>
 
       <div className="apv-actions">

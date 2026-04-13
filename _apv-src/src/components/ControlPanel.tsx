@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { airports } from "@/components/ui/flight-airports";
 import type { AppConfig, FlightMode, LineStyle, TripType, BasemapKind, MapTheme, ProjectionKind, RouteEntry } from "@/lib/config";
 
@@ -6,22 +7,29 @@ type Props = {
   onChange: (config: AppConfig) => void;
 };
 
-/** Airport datalist — rendered once and referenced by id from every input. */
-function AirportDatalist() {
-  const codes = Object.keys(airports).sort();
+/**
+ * Airport datalist — memoized so the 515 <option> elements render exactly
+ * once per mount. Without the memo wrapper Safari re-walks every option on
+ * every keystroke, which is the root cause of the waypoint-entry lag.
+ *
+ * Labels are kept short ("code — city") to reduce per-option DOM work.
+ */
+const AIRPORT_CODES = Object.keys(airports).sort();
+
+const AirportDatalist = memo(function AirportDatalist() {
   return (
     <datalist id="apv-airport-list">
-      {codes.map((code) => {
+      {AIRPORT_CODES.map((code) => {
         const a = airports[code];
         return (
           <option key={code} value={code}>
-            {a.name} — {a.city}, {a.country}
+            {code} — {a.city}
           </option>
         );
       })}
     </datalist>
   );
-}
+});
 
 function Range({
   label,
