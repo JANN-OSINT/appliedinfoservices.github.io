@@ -1,0 +1,344 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Theme variables: map shadcn/Tailwind design tokens to the Applied
+ * Information Services site palette (defined in ../../css/main.css).
+ *
+ * Site palette reference:
+ *   --color-primary:       #0057b8  (rgb 0, 87, 184)   hsl 212 100% 36%
+ *   --color-accent:        #c9a84c  (rgb 201, 168, 76) hsl 42  54%  54%
+ *   --color-text-primary:  #1a1f2e  (rgb 26, 31, 46)   hsl 223 28%  14%
+ *   --color-surface:       #ffffff                      hsl 0   0%   100%
+ *   --color-surface-alt:   #f4f6f9                      hsl 218 30%  97%
+ *   --color-border-subtle: #d1d9e6                      hsl 217 30%  86%
+ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 223 28% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 223 28% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 223 28% 14%;
+
+    --primary: 212 100% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 218 30% 97%;
+    --secondary-foreground: 223 28% 14%;
+
+    --muted: 218 30% 97%;
+    --muted-foreground: 218 15% 46%;
+
+    --accent: 42 54% 54%;
+    --accent-foreground: 223 28% 14%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 30% 86%;
+    --input: 217 30% 86%;
+    --ring: 212 100% 36%;
+
+    --radius: 2px;
+  }
+
+  .dark {
+    --background: 218 60% 7%;
+    --foreground: 218 30% 92%;
+    --card: 218 60% 10%;
+    --card-foreground: 218 30% 92%;
+    --popover: 218 60% 10%;
+    --popover-foreground: 218 30% 92%;
+    --primary: 212 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 218 40% 15%;
+    --secondary-foreground: 218 30% 92%;
+    --muted: 218 40% 15%;
+    --muted-foreground: 218 20% 65%;
+    --accent: 42 54% 54%;
+    --accent-foreground: 218 60% 7%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 218 40% 20%;
+    --input: 218 40% 20%;
+    --ring: 212 100% 55%;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* APV app-specific styles. Uses the site's main.css variables where     */
+/* possible so controls match the surrounding page chrome.                */
+/* ────────────────────────────────────────────────────────────────────── */
+
+#root {
+  font-family: var(--font-sans, "Inter", "Helvetica Neue", Arial, sans-serif);
+  color: var(--color-text-primary, #1a1f2e);
+  font-size: 13px;
+  line-height: 1.618;
+}
+
+.apv-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--f4, 34px);
+  margin-top: var(--f3, 21px);
+}
+
+.apv-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 600px;
+  min-height: 360px;
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--color-surface-alt, #f4f6f9);
+}
+
+.apv-stage .maplibregl-map {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.apv-actions {
+  display: flex;
+  gap: var(--f2, 13px);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.apv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--f1, 8px);
+  padding: var(--f1, 8px) var(--f3, 21px);
+  background: var(--color-primary, #0057b8);
+  color: #fff;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.apv-btn:hover:not(:disabled) {
+  background: var(--color-primary-dark, #003d82);
+  box-shadow: 0 8px 21px rgba(0, 87, 184, 0.3);
+}
+.apv-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.apv-btn.apv-btn-ghost {
+  background: transparent;
+  color: var(--color-primary, #0057b8);
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+}
+.apv-btn.apv-btn-ghost:hover:not(:disabled) {
+  background: var(--color-surface-alt, #f4f6f9);
+  box-shadow: none;
+}
+
+.apv-panel {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  border-top: 3px solid var(--color-primary, #0057b8);
+  border-radius: 2px;
+  padding: var(--f3, 21px) var(--f4, 34px);
+}
+
+.apv-panel h3 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #4a5568);
+  margin-bottom: var(--f2, 13px);
+  padding-bottom: var(--f1, 8px);
+  border-bottom: 1px solid var(--color-border-subtle, #d1d9e6);
+}
+
+.apv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--f2, 13px) var(--f3, 21px);
+}
+
+.apv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+.apv-field label,
+.apv-field > span.apv-label {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary, #4a5568);
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.apv-field input[type="text"],
+.apv-field input[type="number"],
+.apv-field input[type="url"],
+.apv-field select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  border-radius: 2px;
+  background: var(--color-surface, #fff);
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 13px;
+  color: var(--color-text-primary, #1a1f2e);
+  width: 100%;
+}
+.apv-field input[type="text"]:focus,
+.apv-field input[type="number"]:focus,
+.apv-field input[type="url"]:focus,
+.apv-field select:focus {
+  outline: 2px solid var(--color-primary, #0057b8);
+  outline-offset: 1px;
+  border-color: var(--color-primary, #0057b8);
+}
+
+.apv-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-primary, #0057b8);
+}
+
+.apv-field input[type="color"] {
+  width: 100%;
+  height: 32px;
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  border-radius: 2px;
+  background: var(--color-surface, #fff);
+  padding: 2px;
+  cursor: pointer;
+}
+
+.apv-range-row {
+  display: flex;
+  align-items: center;
+  gap: var(--f1, 8px);
+}
+.apv-range-row input[type="range"] {
+  flex: 1;
+}
+.apv-range-row output {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 11px;
+  color: var(--color-text-secondary, #4a5568);
+  min-width: 44px;
+  text-align: right;
+}
+
+.apv-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--f1, 8px);
+  font-size: 13px;
+  color: var(--color-text-primary, #1a1f2e);
+  cursor: pointer;
+  user-select: none;
+}
+.apv-switch input[type="checkbox"] {
+  accent-color: var(--color-primary, #0057b8);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.apv-route-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--f1, 8px);
+}
+.apv-route-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--f1, 8px);
+  align-items: end;
+}
+.apv-route-row button.apv-remove {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  background: var(--color-surface, #fff);
+  color: var(--color-text-secondary, #4a5568);
+  cursor: pointer;
+  border-radius: 2px;
+  height: 30px;
+  font-size: 14px;
+  line-height: 1;
+}
+.apv-route-row button.apv-remove:hover {
+  background: var(--color-surface-alt, #f4f6f9);
+  color: var(--color-primary, #0057b8);
+}
+
+.apv-mode-tabs {
+  display: inline-flex;
+  border: 1px solid var(--color-border-subtle, #d1d9e6);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--f2, 13px);
+}
+.apv-mode-tabs button {
+  padding: 8px var(--f3, 21px);
+  border: none;
+  background: var(--color-surface, #fff);
+  color: var(--color-text-secondary, #4a5568);
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-right: 1px solid var(--color-border-subtle, #d1d9e6);
+}
+.apv-mode-tabs button:last-child {
+  border-right: none;
+}
+.apv-mode-tabs button.active {
+  background: var(--color-primary, #0057b8);
+  color: #fff;
+}
+
+.apv-hint {
+  font-size: 11px;
+  color: var(--color-text-muted, #8892a4);
+  margin-top: 4px;
+}
+
+.apv-error {
+  padding: var(--f2, 13px);
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-left: 3px solid #e53e3e;
+  color: #9b2c2c;
+  font-size: 12px;
+  border-radius: 2px;
+  margin-top: var(--f2, 13px);
+}
+
+@media (max-width: 700px) {
+  .apv-route-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .apv-route-row button.apv-remove {
+    grid-column: 1 / -1;
+  }
+  .apv-mode-tabs {
+    display: flex;
+    width: 100%;
+  }
+  .apv-mode-tabs button {
+    flex: 1;
+  }
+}

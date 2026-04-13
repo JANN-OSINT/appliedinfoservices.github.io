@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Applied Flight Visualizer (APV) — interactive flight-route visualization tool.">
+  <title>APV | Applied Information Services</title>
+
+  <!-- Google Analytics (same ID as rest of site) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CWY00FKP9J');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <!-- Shared site stylesheet -->
+  <link rel="stylesheet" href="../../css/main.css?v=11">
+  <script type="module" crossorigin src="/tools/apv/assets/index-CIav5e_X.js"></script>
+  <link rel="stylesheet" crossorigin href="/tools/apv/assets/index-DSv3dcoS.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-content">
+    <div class="crumb"><a href="../../index.html">&larr; Back to Home</a></div>
+
+    <div class="content-section apv-section">
+      <h2>APV</h2>
+
+      <div class="site-notice">
+        <p>APV (Applied Flight Visualizer) is an interactive flight-route
+        visualization tool wrapping the open-source <em>flightcn</em> component
+        set. Route arcs are rendered as great circles over a MapLibre basemap.
+        All data shown here is illustrative only and does not represent
+        real-time flight operations or operational intelligence.</p>
+      </div>
+
+      <!-- React app mounts here -->
+      <div id="root"></div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script>
+    // Inject shared site header/footer (same pattern as jann.html / crystal-peak.html)
+    fetch('../../includes/header.html')
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        document.getElementById('header-placeholder').innerHTML = html;
+      })
+      .catch(function () { /* header load failed — page still functional */ });
+
+    fetch('../../includes/footer.html')
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        document.getElementById('footer-placeholder').innerHTML = html;
+        document.querySelectorAll('.ais-copyright-year').forEach(function (el) {
+          el.textContent = new Date().getFullYear();
+        });
+      })
+      .catch(function () { /* footer load failed — page still functional */ });
+  </script>
+
+</body>
+</html>
