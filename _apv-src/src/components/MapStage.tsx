@@ -1,13 +1,19 @@
 import { useEffect, useMemo } from "react";
-import { Map, MapControls, type MapViewport } from "@/components/ui/map";
+import { Map as MapLibreMap, MapControls, type MapViewport } from "@/components/ui/map";
 import {
+  FlightAirport,
   FlightRoute,
   FlightRoutes,
   FlightMultiRoute,
   type FlightRouteData,
 } from "@/components/ui/flight";
-import { airports, type AirportRef } from "@/components/ui/flight-airports";
+import type { AirportRef } from "@/components/ui/flight-airports";
 import { parseAirportRef, type AppConfig } from "@/lib/config";
+import {
+  resolveAirportCode,
+  toLngLat,
+  type ResolvedAirport,
+} from "@/lib/airportIndex";
 
 const BASEMAPS: Record<
   Exclude<AppConfig["basemap"], "custom">,
@@ -28,17 +34,34 @@ const BASEMAPS: Record<
 };
 
 /**
- * Only accept airport refs that are fully resolvable — a coordinate tuple,
- * or an IATA code that exists in the bundled dataset. Partial/invalid
- * entries are skipped silently instead of thrashing the render loop.
+ * A route endpoint, after resolution. We carry both the `[lng, lat]` tuple
+ * (used as the flightcn `AirportRef`) and, when the input resolved to a
+ * known code, the full airport record — so we can render our own labeled
+ * marker with the military base or ICAO-only airport name.
  */
-function toValidRef(input: string): AirportRef | null {
+type Endpoint = {
+  ref: AirportRef;
+  airport?: ResolvedAirport;
+};
+
+/**
+ * Resolve a user-entered token into a route endpoint. Accepts:
+ *   - IATA codes ("LAX", "JFK")
+ *   - ICAO codes ("KJFK", "KDOV", "EGLL")
+ *   - Coordinate pairs ("121.5, 25")
+ *
+ * Returns null for partial / unrecognized input so the render loop doesn't
+ * thrash while the user is mid-typing.
+ */
+function resolveEndpoint(input: string): Endpoint | null {
   const parsed = parseAirportRef(input);
-  if (Array.isArray(parsed)) return parsed;
-  if (typeof parsed === "string" && parsed.length === 3 && airports[parsed]) {
-    return parsed;
+  if (Array.isArray(parsed)) {
+    return { ref: parsed };
   }
-  return null;
+  if (typeof parsed !== "string" || parsed.length === 0) return null;
+  const resolved = resolveAirportCode(parsed);
+  if (!resolved) return null;
+  return { ref: toLngLat(resolved), airport: resolved };
 }
 
 type Props = {
@@ -82,6 +105,10 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
     ],
   );
 
+  // Props shared across every flight component. We suppress flightcn's
+  // built-in airport markers (`showAirports: false`) and render our own
+  // below — flightcn only knows the 515 bundled civilian airports, so its
+  // built-in labels would be empty for military bases and ICAO-only fields.
   const sharedRouteProps = useMemo(
     () => ({
       color: config.color,
@@ -89,8 +116,7 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
       opacity: config.opacity,
       lineStyle: config.lineStyle,
       npoints: config.npoints,
-      showAirports: config.showAirports,
-      showLabel: config.showLabel,
+      showAirports: false,
       interactive: config.interactive,
       hoverEffect: config.hoverEffect,
       tripType: config.tripType,
@@ -102,8 +128,6 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
       config.opacity,
       config.lineStyle,
       config.npoints,
-      config.showAirports,
-      config.showLabel,
       config.interactive,
       config.hoverEffect,
       config.tripType,
@@ -111,27 +135,46 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
     ],
   );
 
-  // Resolve the flight layer off the render hot path. Only fully valid
-  // airport refs make it through; partial/invalid inputs are dropped
-  // silently so typing "L" → "LA" → "LAX" doesn't thrash MapLibre.
-  const flightLayer = useMemo<JSX.Element | null>(() => {
+  // Resolve the route endpoints + collect every referenced airport so we can
+  // render labeled markers for all of them, including military bases and
+  // ICAO-only airfields that flightcn's bundled dictionary doesn't know about.
+  const { flightLayer, markerAirports } = useMemo<{
+    flightLayer: JSX.Element | null;
+    markerAirports: ResolvedAirport[];
+  }>(() => {
+    const seen = new Map<string, ResolvedAirport>();
+    const pushMarker = (a?: ResolvedAirport) => {
+      if (!a) return;
+      const key = a.icao ?? a.iata ?? `${a.longitude},${a.latitude}`;
+      if (!seen.has(key)) seen.set(key, a);
+    };
+
     try {
       if (config.mode === "single") {
-        const from = toValidRef(config.singleFrom);
-        const to = toValidRef(config.singleTo);
-        if (!from || !to) return null;
-        return <FlightRoute from={from} to={to} {...sharedRouteProps} />;
+        const from = resolveEndpoint(config.singleFrom);
+        const to = resolveEndpoint(config.singleTo);
+        if (!from || !to) return { flightLayer: null, markerAirports: [] };
+        pushMarker(from.airport);
+        pushMarker(to.airport);
+        return {
+          flightLayer: (
+            <FlightRoute from={from.ref} to={to.ref} {...sharedRouteProps} />
+          ),
+          markerAirports: Array.from(seen.values()),
+        };
       }
 
       if (config.mode === "multi") {
         const routes: FlightRouteData[] = [];
         for (const r of config.multiRoutes) {
-          const from = toValidRef(r.from);
-          const to = toValidRef(r.to);
+          const from = resolveEndpoint(r.from);
+          const to = resolveEndpoint(r.to);
           if (!from || !to) continue;
+          pushMarker(from.airport);
+          pushMarker(to.airport);
           routes.push({
-            from,
-            to,
+            from: from.ref,
+            to: to.ref,
             color: r.color,
             width: r.width,
             opacity: r.opacity,
@@ -139,20 +182,37 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
             tripType: r.tripType,
           });
         }
-        if (routes.length === 0) return null;
-        return <FlightRoutes routes={routes} {...sharedRouteProps} />;
+        if (routes.length === 0)
+          return { flightLayer: null, markerAirports: [] };
+        return {
+          flightLayer: (
+            <FlightRoutes routes={routes} {...sharedRouteProps} />
+          ),
+          markerAirports: Array.from(seen.values()),
+        };
       }
 
       // multi-leg
-      const waypoints: AirportRef[] = [];
+      const waypointRefs: AirportRef[] = [];
       for (const w of config.multiLegWaypoints) {
-        const ref = toValidRef(w);
-        if (ref) waypoints.push(ref);
+        const ep = resolveEndpoint(w);
+        if (!ep) continue;
+        waypointRefs.push(ep.ref);
+        pushMarker(ep.airport);
       }
-      if (waypoints.length < 2) return null;
-      return <FlightMultiRoute waypoints={waypoints} {...sharedRouteProps} />;
+      if (waypointRefs.length < 2)
+        return { flightLayer: null, markerAirports: [] };
+      return {
+        flightLayer: (
+          <FlightMultiRoute
+            waypoints={waypointRefs}
+            {...sharedRouteProps}
+          />
+        ),
+        markerAirports: Array.from(seen.values()),
+      };
     } catch {
-      return null;
+      return { flightLayer: null, markerAirports: [] };
     }
   }, [
     config.mode,
@@ -169,8 +229,8 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
     if (flightLayer == null) {
       onError(
         config.mode === "multi-leg"
-          ? "Enter at least two valid airport codes to draw a multi-leg journey."
-          : "Enter valid airport codes (e.g. LAX, TPE) or lng,lat coordinates to draw a route.",
+          ? "Enter at least two valid airport codes (IATA, ICAO, or lng,lat) to draw a multi-leg journey."
+          : "Enter valid airport codes (e.g. LAX, KJFK, KDOV) or lng,lat coordinates to draw a route.",
       );
     } else {
       onError(null);
@@ -182,7 +242,7 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
   };
 
   return (
-    <Map
+    <MapLibreMap
       className="size-full"
       theme={config.theme}
       styles={mapStyles}
@@ -194,6 +254,17 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
     >
       {config.showMapControls ? <MapControls /> : null}
       {flightLayer}
-    </Map>
+      {config.showAirports &&
+        markerAirports.map((a) => (
+          <FlightAirport
+            key={a.icao ?? a.iata ?? `${a.longitude},${a.latitude}`}
+            longitude={a.longitude}
+            latitude={a.latitude}
+            name={a.code}
+            showLabel={config.showLabel}
+            labelPosition={config.labelPosition}
+          />
+        ))}
+    </MapLibreMap>
   );
 }

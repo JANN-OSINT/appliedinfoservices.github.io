@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { airports } from "@/components/ui/flight-airports";
+import { getAllListableAirports } from "@/lib/airportIndex";
 import type { AppConfig, FlightMode, LineStyle, TripType, BasemapKind, MapTheme, ProjectionKind, RouteEntry } from "@/lib/config";
 
 type Props = {
@@ -8,22 +8,29 @@ type Props = {
 };
 
 /**
- * Airport datalist — memoized so the 515 <option> elements render exactly
+ * Airport datalist — memoized so the ~5,000 <option> elements render exactly
  * once per mount. Without the memo wrapper Safari re-walks every option on
- * every keystroke, which is the root cause of the waypoint-entry lag.
+ * every keystroke, which is the root cause of the waypoint-entry lag we hit
+ * back when the list was 515 entries.
  *
- * Labels are kept short ("code — city") to reduce per-option DOM work.
+ * Each entry shows the primary display code (IATA preferred, ICAO fallback)
+ * plus the city, with a ★ suffix marking military installations — the
+ * user's primary use case — so they're easy to spot while scrolling. Labels
+ * are deliberately short to minimize per-option DOM work.
  */
-const AIRPORT_CODES = Object.keys(airports).sort();
+const ALL_AIRPORTS = getAllListableAirports();
 
 const AirportDatalist = memo(function AirportDatalist() {
   return (
     <datalist id="apv-airport-list">
-      {AIRPORT_CODES.map((code) => {
-        const a = airports[code];
+      {ALL_AIRPORTS.map((a) => {
+        const key = a.icao ?? a.iata ?? a.code;
+        const value = a.code;
+        const suffix = a.type === "military" ? " ★" : "";
         return (
-          <option key={code} value={code}>
-            {code} — {a.city}
+          <option key={key} value={value}>
+            {value} — {a.city}
+            {suffix}
           </option>
         );
       })}
@@ -133,7 +140,7 @@ function AirportInput({
         type="text"
         list="apv-airport-list"
         value={value}
-        placeholder={placeholder ?? "IATA code or lng,lat"}
+        placeholder={placeholder ?? "IATA, ICAO, or lng,lat"}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

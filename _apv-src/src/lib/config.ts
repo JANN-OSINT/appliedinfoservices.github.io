@@ -117,10 +117,11 @@ export const DEFAULT_CONFIG: AppConfig = {
 };
 
 /**
- * Parse a user-entered airport string. Accepts IATA codes ("TPE", "lax") or
- * comma-separated coordinates ("121.5, 25"). Returns the string unchanged
- * (uppercase if it's a code) so flightcn's resolveAirport() can handle it,
- * or a [lng, lat] tuple for raw coordinates.
+ * Parse a user-entered airport string. Accepts IATA codes ("TPE", "lax"),
+ * ICAO codes ("KJFK", "EGLL", "KDOV"), or comma-separated coordinates
+ * ("121.5, 25"). Returns the string uppercased so the resolver in
+ * airportIndex.ts can look it up in either the IATA or ICAO table, or a
+ * [lng, lat] tuple for raw coordinates.
  */
 export function parseAirportRef(input: string): string | [number, number] {
   const trimmed = input.trim();
