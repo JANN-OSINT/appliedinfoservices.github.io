@@ -254,8 +254,6 @@ export function MapStage({ config, onConfigChange, onError, mapRef }: Props) {
       projection={projection}
       viewport={config.viewport}
       onViewportChange={handleViewportChange}
-      // @ts-expect-error — MapLibre WebGL option, valid at runtime, required for canvas export
-      preserveDrawingBuffer={true}
     >
       {config.showMapControls ? <MapControls /> : null}
       {flightLayer}

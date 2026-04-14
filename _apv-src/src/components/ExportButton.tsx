@@ -40,7 +40,8 @@ export function ExportButton({ stageRef, mapRef }: Props) {
     setBusy(true);
     setErr(null);
     try {
-      // 1. Wait for any in-flight tile loads / camera animation to settle.
+      // 1. Wait for all in-flight tile loads / animations to finish.
+      //    `idle` only fires when the map is fully rendered and quiet.
       await new Promise<void>((resolve) => {
         if (map.loaded() && !map.isMoving() && !map.isZooming()) {
           resolve();
@@ -49,32 +50,18 @@ export function ExportButton({ stageRef, mapRef }: Props) {
         }
       });
 
-      // 2. Force a fresh render and read the GL canvas synchronously inside
-      //    MapLibre's `render` event — this fires after the GL paint but
-      //    before the browser buffer swap, so toDataURL() is guaranteed to
-      //    see actual pixel data even when preserveDrawingBuffer is true.
-      //    A 5-second timeout guards against maps that never re-render
-      //    (e.g. fully static with no tiles in flight).
-      const bgDataUrl = await new Promise<string>((resolve, reject) => {
-        const timer = setTimeout(
-          () => reject(new Error("Map render timed out — try again.")),
-          5000,
+      // 2. Read the GL canvas. `preserveDrawingBuffer: true` is hardcoded
+      //    in map.tsx so the backing store is always readable — no render
+      //    event dance needed, toDataURL returns actual pixels.
+      let bgDataUrl: string;
+      try {
+        bgDataUrl = map.getCanvas().toDataURL("image/png");
+      } catch {
+        throw new Error(
+          "Basemap export blocked by cross-origin tile provider. " +
+            "Try a different basemap style.",
         );
-        map.once("render", () => {
-          clearTimeout(timer);
-          try {
-            resolve(map.getCanvas().toDataURL("image/png"));
-          } catch {
-            reject(
-              new Error(
-                "Basemap export blocked by cross-origin tile provider. " +
-                  "Try a different basemap style.",
-              ),
-            );
-          }
-        });
-        map.triggerRepaint();
-      });
+      }
 
       // 4. Capture the DOM overlay (markers, labels, controls). Filter
       //    out every <canvas> — we have our own basemap readback, and

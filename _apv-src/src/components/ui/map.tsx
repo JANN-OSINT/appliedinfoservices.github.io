@@ -227,6 +227,13 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       attributionControl: {
         compact: true,
       },
+      // Required so `map.getCanvas().toDataURL()` returns real pixels
+      // instead of a blank image. Without this, WebGL clears the backing
+      // store after every swap and any later readback is empty. In
+      // MapLibre GL 5.x this moved from a top-level option into the
+      // canvasContextAttributes WebGL-attributes object. Small perf cost;
+      // necessary for the APV "Export PNG" flow.
+      canvasContextAttributes: { preserveDrawingBuffer: true },
       ...props,
       ...viewport,
     });
