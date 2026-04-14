@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, type MutableRefObject } from "react";
+import type MapLibreGL from "maplibre-gl";
 import { Map as MapLibreMap, MapControls, type MapViewport } from "@/components/ui/map";
 import {
   FlightAirport,
@@ -68,9 +69,12 @@ type Props = {
   config: AppConfig;
   onConfigChange: (config: AppConfig) => void;
   onError: (err: string | null) => void;
+  /** Exposes the underlying MapLibre instance to the parent so the export
+   *  flow can read the GL canvas directly. */
+  mapRef?: MutableRefObject<MapLibreGL.Map | null>;
 };
 
-export function MapStage({ config, onConfigChange, onError }: Props) {
+export function MapStage({ config, onConfigChange, onError, mapRef }: Props) {
   const mapStyles = useMemo(() => {
     if (config.basemap === "custom" && config.customStyleUrl) {
       return { light: config.customStyleUrl, dark: config.customStyleUrl };
@@ -243,6 +247,7 @@ export function MapStage({ config, onConfigChange, onError }: Props) {
 
   return (
     <MapLibreMap
+      ref={mapRef}
       className="size-full"
       theme={config.theme}
       styles={mapStyles}

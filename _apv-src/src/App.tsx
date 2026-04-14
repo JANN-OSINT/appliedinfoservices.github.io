@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import type MapLibreGL from "maplibre-gl";
 import { MapStage } from "./components/MapStage";
 import { ControlPanel } from "./components/ControlPanel";
 import { ExportButton } from "./components/ExportButton";
@@ -8,6 +9,7 @@ import { useDebounced } from "./lib/useDebounced";
 export default function App() {
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const stageRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreGL.Map | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
 
   // Debounce the heavy parts (routes, colors, animation) but keep viewport
@@ -28,11 +30,16 @@ export default function App() {
   return (
     <div className="apv-layout">
       <div className="apv-stage" ref={stageRef}>
-        <MapStage config={mapConfig} onConfigChange={setConfig} onError={setLastError} />
+        <MapStage
+          config={mapConfig}
+          onConfigChange={setConfig}
+          onError={setLastError}
+          mapRef={mapRef}
+        />
       </div>
 
       <div className="apv-actions">
-        <ExportButton stageRef={stageRef} />
+        <ExportButton stageRef={stageRef} mapRef={mapRef} />
         <button
           type="button"
           className="apv-btn apv-btn-ghost"
