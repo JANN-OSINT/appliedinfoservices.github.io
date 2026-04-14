@@ -49,24 +49,32 @@ export function ExportButton({ stageRef, mapRef }: Props) {
         }
       });
 
-      // 2. Force a fresh render and give the GPU one frame to commit it
-      //    before we read the backing store. Without this, Safari may
-      //    return a blank canvas on the first export of a session.
-      map.triggerRepaint();
-      await new Promise<void>((r) =>
-        requestAnimationFrame(() => r()),
-      );
-
-      // 3. Read the GL canvas → basemap + flight-arc image.
-      let bgDataUrl: string;
-      try {
-        bgDataUrl = map.getCanvas().toDataURL("image/png");
-      } catch (e) {
-        throw new Error(
-          "Basemap export blocked by cross-origin tile provider. " +
-            "Try a different basemap style.",
+      // 2. Force a fresh render and read the GL canvas synchronously inside
+      //    MapLibre's `render` event — this fires after the GL paint but
+      //    before the browser buffer swap, so toDataURL() is guaranteed to
+      //    see actual pixel data even when preserveDrawingBuffer is true.
+      //    A 5-second timeout guards against maps that never re-render
+      //    (e.g. fully static with no tiles in flight).
+      const bgDataUrl = await new Promise<string>((resolve, reject) => {
+        const timer = setTimeout(
+          () => reject(new Error("Map render timed out — try again.")),
+          5000,
         );
-      }
+        map.once("render", () => {
+          clearTimeout(timer);
+          try {
+            resolve(map.getCanvas().toDataURL("image/png"));
+          } catch {
+            reject(
+              new Error(
+                "Basemap export blocked by cross-origin tile provider. " +
+                  "Try a different basemap style.",
+              ),
+            );
+          }
+        });
+        map.triggerRepaint();
+      });
 
       // 4. Capture the DOM overlay (markers, labels, controls). Filter
       //    out every <canvas> — we have our own basemap readback, and
