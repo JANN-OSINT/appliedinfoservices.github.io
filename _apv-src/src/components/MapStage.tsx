@@ -72,9 +72,19 @@ type Props = {
   /** Exposes the underlying MapLibre instance to the parent so the export
    *  flow can read the GL canvas directly. */
   mapRef?: MutableRefObject<MapLibreGL.Map | null>;
+  /** Bridge for ExportButton: MapStage writes the resolved airport marker
+   *  list here whenever it recomputes, so the export flow can draw
+   *  matching dots without re-running the resolver. */
+  markerAirportsRef?: MutableRefObject<ResolvedAirport[]>;
 };
 
-export function MapStage({ config, onConfigChange, onError, mapRef }: Props) {
+export function MapStage({
+  config,
+  onConfigChange,
+  onError,
+  mapRef,
+  markerAirportsRef,
+}: Props) {
   const mapStyles = useMemo(() => {
     if (config.basemap === "custom" && config.customStyleUrl) {
       return { light: config.customStyleUrl, dark: config.customStyleUrl };
@@ -240,6 +250,16 @@ export function MapStage({ config, onConfigChange, onError, mapRef }: Props) {
       onError(null);
     }
   }, [flightLayer, config.mode, onError]);
+
+  // Mirror the resolved marker list into the ref shared with ExportButton
+  // so the PNG export can draw matching dots without re-running the
+  // resolver. Written in an effect (not during render) for strict-mode
+  // safety.
+  useEffect(() => {
+    if (markerAirportsRef) {
+      markerAirportsRef.current = markerAirports;
+    }
+  }, [markerAirports, markerAirportsRef]);
 
   const handleViewportChange = (vp: MapViewport) => {
     onConfigChange({ ...config, viewport: vp });

@@ -5,11 +5,16 @@ import { ControlPanel } from "./components/ControlPanel";
 import { ExportButton } from "./components/ExportButton";
 import { DEFAULT_CONFIG, type AppConfig } from "./lib/config";
 import { useDebounced } from "./lib/useDebounced";
+import type { ResolvedAirport } from "./lib/airportIndex";
 
 export default function App() {
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const stageRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreGL.Map | null>(null);
+  // Cross-component bridge: MapStage writes the currently-rendered marker
+  // list into this ref every time it recomputes; ExportButton reads it at
+  // click time to draw matching dots into the output canvas.
+  const markerAirportsRef = useRef<ResolvedAirport[]>([]);
   const [lastError, setLastError] = useState<string | null>(null);
 
   // Debounce the heavy parts (routes, colors, animation) but keep viewport
@@ -35,11 +40,17 @@ export default function App() {
           onConfigChange={setConfig}
           onError={setLastError}
           mapRef={mapRef}
+          markerAirportsRef={markerAirportsRef}
         />
       </div>
 
       <div className="apv-actions">
-        <ExportButton stageRef={stageRef} mapRef={mapRef} />
+        <ExportButton
+          stageRef={stageRef}
+          mapRef={mapRef}
+          markerAirportsRef={markerAirportsRef}
+          config={config}
+        />
         <button
           type="button"
           className="apv-btn apv-btn-ghost"
