@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Applied Information Services consulting services — intelligence audits, program intelligence briefs, and collection architecture reviews for defense, intelligence, and aerospace organizations.">
+  <title>Services | Applied Information Services</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CWY00FKP9J');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=11">
+
+  <style>
+    /* ── Services document variables ── */
+    .services-doc {
+      --ink:      #0e1014;
+      --surface:  #f5f2ed;
+      --rule:     #1a1d22;
+      --gold:     #9a7c45;
+      --gold-lt:  #c4a46b;
+      --muted:    #6b6b6b;
+      --text:     #1a1d22;
+      --text-sm:  #3d3d3d;
+
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 32px 48px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'Barlow', 'Inter', sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.55;
+    }
+
+    /* ── Document header ── */
+    .sdoc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 7px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .sdoc-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 26pt;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .sdoc-logo-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 400;
+      font-size: 7.5pt;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .sdoc-header-right {
+      text-align: right;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7pt;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      line-height: 1.7;
+    }
+
+    /* ── Positioning block ── */
+    .sdoc-positioning {
+      border-left: 3px solid var(--gold);
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      background: rgba(154, 124, 69, 0.05);
+    }
+
+    .sdoc-positioning p {
+      font-size: 9pt;
+      color: var(--text-sm);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .sdoc-positioning strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ── Section label ── */
+    .sdoc-section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6.5pt;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sdoc-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gold-lt);
+      opacity: 0.4;
+    }
+
+    /* ── Services grid ── */
+    .sdoc-services {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .sdoc-services {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sdoc-service-card {
+      border: 1px solid #d0ccc6;
+      padding: 12px 11px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: #fff;
+      position: relative;
+    }
+
+    .sdoc-service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .sdoc-service-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6pt;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .sdoc-service-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12.5pt;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+    }
+
+    .sdoc-service-tagline {
+      font-size: 7.5pt;
+      font-weight: 500;
+      color: var(--gold);
+      font-style: italic;
+      margin-bottom: 1px;
+    }
+
+    .sdoc-service-desc {
+      font-size: 8pt;
+      color: var(--text-sm);
+      font-weight: 300;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .sdoc-service-meta {
+      border-top: 1px solid #e4e1db;
+      padding-top: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sdoc-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .sdoc-meta-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .sdoc-meta-val {
+      font-size: 7.5pt;
+      color: var(--text-sm);
+      font-weight: 400;
+      text-align: right;
+    }
+
+    .sdoc-meta-price {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Engagement model ── */
+    .sdoc-engagement-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 500px) {
+      .sdoc-engagement-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sdoc-eng-block {
+      background: #fff;
+      border: 1px solid #d0ccc6;
+      padding: 10px 11px;
+    }
+
+    .sdoc-eng-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .sdoc-eng-body {
+      font-size: 7.8pt;
+      color: var(--text-sm);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    /* ── Document footer ── */
+    .sdoc-footer {
+      border-top: 1px solid #c8c4bc;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .sdoc-footer-left {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6.5pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sdoc-footer-contact {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7pt;
+      letter-spacing: 0.1em;
+      color: var(--text-sm);
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    .sdoc-footer-contact a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .sdoc-footer-contact a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Page wrapper background ── */
+    .services-page-wrap {
+      background: #f5f2ed;
+      padding: var(--f3) 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="services-page-wrap">
+    <div class="services-doc">
+
+      <!-- Document header -->
+      <div class="sdoc-header">
+        <div>
+          <div class="sdoc-logo">Applied</div>
+          <div class="sdoc-logo-sub">Applied Information Services, LLC</div>
+        </div>
+        <div class="sdoc-header-right">
+          Defense &middot; Intelligence &middot; Aerospace<br>
+          Capabilities Statement &mdash; Consulting Services<br>
+          Proprietary &amp; Confidential
+        </div>
+      </div>
+
+      <!-- Positioning -->
+      <div class="sdoc-positioning">
+        <p>
+          Most organizations already operate some version of an intelligence function —
+          tracking competitors, monitoring program announcements, watching regulatory shifts, reading contract awards.
+          <strong>They just lack the doctrine, systems and processes to make it systematic.</strong>
+          Applied formalizes what you're already doing — and builds the capability to do it deliberately.
+        </p>
+      </div>
+
+      <!-- Services -->
+      <div class="sdoc-section-label">Consulting Services</div>
+      <div class="sdoc-services">
+
+        <div class="sdoc-service-card">
+          <div class="sdoc-service-num">SVC &mdash; 01</div>
+          <div class="sdoc-service-name">Intelligence<br>Audit</div>
+          <div class="sdoc-service-tagline">Your entry point.</div>
+          <div class="sdoc-service-desc">
+            We map your existing intelligence practices — what you're collecting, where it lives, how it reaches decision-makers —
+            and deliver a structured gap analysis with prioritized recommendations. Low commitment. High clarity. Natural foundation for everything that follows.
+          </div>
+          <div class="sdoc-service-meta">
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Deliverable</span>
+              <span class="sdoc-meta-val">Findings brief + recommendations report</span>
+            </div>
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Starting at</span>
+              <span class="sdoc-meta-price">$2,500</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sdoc-service-card">
+          <div class="sdoc-service-num">SVC &mdash; 02</div>
+          <div class="sdoc-service-name">Program<br>Intelligence Brief</div>
+          <div class="sdoc-service-tagline">Targeted open-source depth.</div>
+          <div class="sdoc-service-desc">
+            A structured OSINT deep-dive on a specific platform, program, contract vehicle, or competitor organization.
+            Sourced from open regulatory filings, aviation registries, government procurement databases, and AIS's
+            curated aerospace intelligence network. Fixed scope, fixed deliverable, no ambiguity.
+          </div>
+          <div class="sdoc-service-meta">
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Deliverable</span>
+              <span class="sdoc-meta-val">Structured intelligence brief, sourced</span>
+            </div>
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Starting at</span>
+              <span class="sdoc-meta-price">$1,500</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sdoc-service-card">
+          <div class="sdoc-service-num">SVC &mdash; 03</div>
+          <div class="sdoc-service-name">Collection<br>Architecture Review</div>
+          <div class="sdoc-service-tagline">For organizations building to last.</div>
+          <div class="sdoc-service-desc">
+            For organizations ready to build or formalize a permanent intelligence capability. We assess your sources,
+            tools, collection workflows, and dissemination pipeline — then deliver a practical blueprint for a
+            sustainable, in-house OSINT function built to your operational tempo and resource constraints.
+          </div>
+          <div class="sdoc-service-meta">
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Deliverable</span>
+              <span class="sdoc-meta-val">Assessment report + architecture blueprint</span>
+            </div>
+            <div class="sdoc-meta-row">
+              <span class="sdoc-meta-label">Starting at</span>
+              <span class="sdoc-meta-price">$4,000</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Engagement model -->
+      <div class="sdoc-section-label">Engagement Model</div>
+      <div class="sdoc-engagement-row">
+        <div class="sdoc-eng-block">
+          <div class="sdoc-eng-title">How Engagements Work</div>
+          <div class="sdoc-eng-body">
+            All projects are scoped and priced before work begins. Scope, deliverables, timeline, and pricing
+            are agreed in writing upfront — no ambiguity, no scope creep. Pricing scales with organizational
+            size and engagement complexity. The starting rates listed are calibrated for small and mid-size
+            operators; enterprise and prime contractor engagements are scoped individually.
+          </div>
+        </div>
+        <div class="sdoc-eng-block">
+          <div class="sdoc-eng-title">Who We Work With</div>
+          <div class="sdoc-eng-body">
+            Applied serves small to mid-size businesses including those in the aerospace, defense, and intelligence sectors.
+            If you're building, bidding, or competing in this space, we want to help your firm succeed.
+          </div>
+        </div>
+      </div>
+
+      <!-- Document footer -->
+      <div class="sdoc-footer">
+        <div class="sdoc-footer-left">
+          Applied Information Services, LLC &nbsp;&middot;&nbsp; United States &nbsp;&middot;&nbsp; <span class="ais-copyright-year"></span>
+        </div>
+        <div class="sdoc-footer-contact">
+          <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a><br>
+          appliedinformationservices.com
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script>
+    fetch('includes/header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+
+    fetch('includes/footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+        document.querySelectorAll('.ais-copyright-year').forEach(el => {
+          el.textContent = new Date().getFullYear();
+        });
+      });
+  </script>
+</body>
+</html>
