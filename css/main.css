@@ -167,12 +167,27 @@ body {
 /* ── Hero ────────────────────────────────────────────────────────────── */
 
 .hero {
-  background: var(--color-nav);
   padding: var(--f6) var(--f5);
   position: relative;
   min-height: 60vh;
   display: flex;
   align-items: center;
+}
+
+/* Header hero — "Applied Information Services" — with background image */
+div.hero {
+  background-color: var(--color-nav);
+  background-image:
+    linear-gradient(135deg, rgba(10,22,40,0.72) 0%, rgba(13,31,60,0.52) 60%, rgba(0,87,184,0.08) 100%),
+    url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Index hero — "Intelligence That Drives Decisions" — solid dark navy */
+section.hero {
+  background: var(--color-nav);
 }
 
 .hero::after {
@@ -197,15 +212,6 @@ body {
   margin: 0 auto;
 }
 
-/* Vertical gold bar */
-.hero-inner::before {
-  content: '';
-  display: block;
-  width: 3px;
-  height: var(--f4);             /* 34px */
-  background: var(--color-accent);
-  margin-bottom: var(--f3);      /* 21px */
-}
 
 .hero h1 {
   font-size: var(--f6);          /* 89px — display scale */
