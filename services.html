@@ -21,387 +21,356 @@
   <link rel="stylesheet" href="css/main.css?v=11">
 
   <style>
-    /* ── Services document variables ── */
-    .services-doc {
-      --ink:      #0e1014;
-      --surface:  #f5f2ed;
-      --rule:     #1a1d22;
-      --gold:     #9a7c45;
-      --gold-lt:  #c4a46b;
-      --muted:    #6b6b6b;
-      --text:     #1a1d22;
-      --text-sm:  #3d3d3d;
-
-      max-width: 800px;
+    /* ── Page body ── */
+    .svc-body {
+      background: var(--color-surface-alt);
+      padding: var(--f4) 0 var(--f6);
+    }
+    .svc-inner {
+      max-width: 860px;
       margin: 0 auto;
-      padding: 40px 32px 48px;
-      background: var(--surface);
-      color: var(--text);
-      font-family: 'Barlow', 'Inter', sans-serif;
-      font-size: 9.5pt;
-      line-height: 1.55;
+      padding: 0 var(--f5);
     }
 
-    /* ── Document header ── */
-    .sdoc-header {
+    /* ── Classification hero band ── */
+    .svc-band {
+      background: var(--color-nav);
+      padding: var(--f5) var(--f5) var(--f4);
+    }
+    .svc-band-inner {
+      max-width: 860px;
+      margin: 0 auto;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding-bottom: 7px;
-      border-bottom: 2px solid var(--ink);
-      margin-bottom: 14px;
+      flex-direction: column;
+      gap: var(--f2);
     }
-
-    .sdoc-logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 26pt;
-      letter-spacing: 0.12em;
-      color: var(--ink);
-      line-height: 1;
+    .svc-domain-tags {
+      font-family: var(--font-mono);
+      font-size: var(--f2);
+      letter-spacing: 0.25em;
       text-transform: uppercase;
+      color: var(--color-accent);
     }
-
-    .sdoc-logo-sub {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 400;
-      font-size: 7.5pt;
-      letter-spacing: 0.22em;
-      color: var(--muted);
+    .svc-doc-type {
+      font-size: var(--f4);
+      font-weight: 600;
+      color: var(--color-text-nav);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .svc-classification {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      margin-top: 2px;
+      color: rgba(201, 168, 76, 0.65);
+    }
+    .svc-band-rule {
+      height: 2px;
+      background: var(--color-accent);
     }
 
-    .sdoc-header-right {
-      text-align: right;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 7pt;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      text-transform: uppercase;
-      line-height: 1.7;
-    }
-
-    /* ── Positioning block ── */
-    .sdoc-positioning {
-      border-left: 3px solid var(--gold);
-      padding: 8px 12px;
-      margin-bottom: 16px;
-      background: rgba(154, 124, 69, 0.05);
-    }
-
-    .sdoc-positioning p {
-      font-size: 9pt;
-      color: var(--text-sm);
-      line-height: 1.6;
+    /* ── Positioning statement ── */
+    .svc-positioning {
+      font-size: var(--f3);
       font-weight: 300;
+      line-height: 1.618;
+      color: var(--color-text-secondary);
+      padding: var(--f5) 0 var(--f4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      margin-bottom: var(--f4);
     }
-
-    .sdoc-positioning strong {
-      color: var(--text);
-      font-weight: 500;
+    .svc-positioning strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
     }
 
     /* ── Section label ── */
-    .sdoc-section-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 6.5pt;
-      font-weight: 600;
-      letter-spacing: 0.28em;
+    .svc-section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 10px;
+      color: var(--color-accent);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--f2);
+      margin-bottom: var(--f3);
     }
-
-    .sdoc-section-label::after {
+    .svc-section-label::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--gold-lt);
-      opacity: 0.4;
+      background: var(--color-accent);
+      opacity: 0.3;
     }
 
     /* ── Services grid ── */
-    .sdoc-services {
+    .svc-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--f2);
+      margin-bottom: var(--f5);
     }
 
-    @media (max-width: 600px) {
-      .sdoc-services {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .sdoc-service-card {
-      border: 1px solid #d0ccc6;
-      padding: 12px 11px 11px;
+    /* ── Service card ── */
+    .svc-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-top: 3px solid var(--color-accent);
+      padding: var(--f3);
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      background: #fff;
-      position: relative;
+      gap: var(--f2);
     }
-
-    .sdoc-service-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--gold);
+    .svc-num {
+      font-family: var(--font-mono);
+      font-size: var(--f4);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: rgba(201, 168, 76, 0.35);
+      line-height: 1;
     }
-
-    .sdoc-service-num {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 6pt;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    .sdoc-service-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12.5pt;
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: 0.02em;
+    .svc-name {
+      font-size: var(--f3);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.01em;
       line-height: 1.15;
     }
-
-    .sdoc-service-tagline {
-      font-size: 7.5pt;
+    .svc-tagline {
+      font-size: var(--f2);
       font-weight: 500;
-      color: var(--gold);
+      color: var(--color-accent);
       font-style: italic;
-      margin-bottom: 1px;
     }
-
-    .sdoc-service-desc {
-      font-size: 8pt;
-      color: var(--text-sm);
-      font-weight: 300;
-      line-height: 1.55;
+    .svc-desc {
+      font-size: var(--f2);
+      color: var(--color-text-secondary);
+      line-height: 1.618;
       flex: 1;
     }
 
-    .sdoc-service-meta {
-      border-top: 1px solid #e4e1db;
-      padding-top: 7px;
+    /* Meta block — contained, subtle background, bleeds to card edges */
+    .svc-meta {
+      background: var(--color-surface-alt);
+      border-top: 1px solid var(--color-border-subtle);
+      padding: var(--f2) var(--f3);
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: var(--f1);
+      margin: 0 calc(-1 * var(--f3)) calc(-1 * var(--f3));
     }
-
-    .sdoc-meta-row {
+    .svc-meta-row {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 4px;
+      flex-direction: column;
+      gap: 2px;
     }
-
-    .sdoc-meta-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 6pt;
-      letter-spacing: 0.16em;
+    .svc-meta-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--muted);
-      white-space: nowrap;
+      color: var(--color-text-muted);
     }
-
-    .sdoc-meta-val {
-      font-size: 7.5pt;
-      color: var(--text-sm);
-      font-weight: 400;
-      text-align: right;
+    .svc-meta-val {
+      font-size: var(--f2);
+      color: var(--color-text-secondary);
     }
-
-    .sdoc-meta-price {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10pt;
-      font-weight: 600;
-      color: var(--ink);
+    .svc-price-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-top: var(--f1);
+    }
+    .svc-price {
+      font-size: var(--f3);
+      font-weight: 700;
+      color: var(--color-text-primary);
       letter-spacing: 0.02em;
     }
 
     /* ── Engagement model ── */
-    .sdoc-engagement-row {
+    .svc-eng-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: var(--f3);
+      margin-bottom: var(--f5);
     }
-
-    @media (max-width: 500px) {
-      .sdoc-engagement-row {
-        grid-template-columns: 1fr;
-      }
+    .svc-eng-block {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-subtle);
+      border-top: 3px solid var(--color-accent);
+      padding: var(--f3);
     }
-
-    .sdoc-eng-block {
-      background: #fff;
-      border: 1px solid #d0ccc6;
-      padding: 10px 11px;
-    }
-
-    .sdoc-eng-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 8.5pt;
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: 0.05em;
+    .svc-eng-title {
+      font-family: var(--font-mono);
+      font-size: var(--f2);
       text-transform: uppercase;
-      margin-bottom: 5px;
+      letter-spacing: 0.08em;
+      color: var(--color-text-primary);
+      font-weight: 600;
+      margin-bottom: var(--f2);
+    }
+    .svc-eng-body {
+      font-size: var(--f2);
+      color: var(--color-text-secondary);
+      line-height: 1.618;
+    }
+    .svc-eng-body p {
+      margin-bottom: var(--f2);
+    }
+    .svc-eng-body p:last-child {
+      margin-bottom: 0;
+    }
+    .svc-trust-anchor {
+      font-weight: 600;
+      color: var(--color-text-primary);
+      border-left: 3px solid var(--color-accent);
+      padding-left: var(--f2);
+      display: block;
     }
 
-    .sdoc-eng-body {
-      font-size: 7.8pt;
-      color: var(--text-sm);
-      font-weight: 300;
-      line-height: 1.55;
-    }
-
-    /* ── Document footer ── */
-    .sdoc-footer {
-      border-top: 1px solid #c8c4bc;
-      padding-top: 8px;
+    /* ── Document footer contact block ── */
+    .svc-doc-footer {
+      border-top: 1px solid var(--color-border-subtle);
+      padding-top: var(--f2);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
+      gap: var(--f2);
+      margin-top: var(--f3);
     }
-
-    .sdoc-footer-left {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 6.5pt;
-      letter-spacing: 0.14em;
+    .svc-doc-footer-left {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--color-text-muted);
     }
-
-    .sdoc-footer-contact {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 7pt;
-      letter-spacing: 0.1em;
-      color: var(--text-sm);
+    .svc-doc-footer-right {
+      font-size: var(--f2);
+      color: var(--color-text-secondary);
       text-align: right;
       line-height: 1.7;
     }
-
-    .sdoc-footer-contact a {
-      color: var(--gold);
+    .svc-doc-footer-right a {
+      color: var(--color-accent);
       text-decoration: none;
     }
-
-    .sdoc-footer-contact a:hover {
+    .svc-doc-footer-right a:hover {
       text-decoration: underline;
     }
 
-    /* ── Page wrapper background ── */
-    .services-page-wrap {
-      background: #f5f2ed;
-      padding: var(--f3) 0;
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .svc-grid {
+        grid-template-columns: 1fr;
+      }
+      .svc-eng-grid {
+        grid-template-columns: 1fr;
+      }
+      .svc-band {
+        padding: var(--f4) var(--f3) var(--f3);
+      }
+      .svc-inner {
+        padding: 0 var(--f3);
+      }
+      .svc-doc-type {
+        font-size: var(--f3);
+      }
     }
   </style>
 </head>
 <body>
   <div id="header-placeholder"></div>
 
-  <div class="services-page-wrap">
-    <div class="services-doc">
+  <!-- Classification hero band -->
+  <div class="svc-band">
+    <div class="svc-band-inner">
+      <div class="svc-domain-tags">Defense &middot; Intelligence &middot; Aerospace</div>
+      <div class="svc-doc-type">Capabilities Statement &mdash; Consulting Services</div>
+      <div class="svc-classification">Proprietary &amp; Confidential</div>
+    </div>
+  </div>
+  <div class="svc-band-rule"></div>
 
-      <!-- Document header -->
-      <div class="sdoc-header">
-        <div>
-          <div class="sdoc-logo">Applied</div>
-          <div class="sdoc-logo-sub">Applied Information Services, LLC</div>
-        </div>
-        <div class="sdoc-header-right">
-          Defense &middot; Intelligence &middot; Aerospace<br>
-          Capabilities Statement &mdash; Consulting Services<br>
-          Proprietary &amp; Confidential
-        </div>
-      </div>
+  <div class="svc-body">
+    <div class="svc-inner">
 
-      <!-- Positioning -->
-      <div class="sdoc-positioning">
-        <p>
-          Most organizations already operate some version of an intelligence function —
-          tracking competitors, monitoring program announcements, watching regulatory shifts, reading contract awards.
-          <strong>They just lack the doctrine, systems and processes to make it systematic.</strong>
-          Applied formalizes what you're already doing — and builds the capability to do it deliberately.
-        </p>
-      </div>
+      <!-- Positioning statement -->
+      <p class="svc-positioning">
+        Most organizations already operate some version of an intelligence function —
+        tracking competitors, monitoring program announcements, watching regulatory shifts, reading contract awards.
+        <strong>They just lack the doctrine, systems and processes to make it systematic.</strong>
+        Applied formalizes what you're already doing — and builds the capability to do it deliberately.
+      </p>
 
       <!-- Services -->
-      <div class="sdoc-section-label">Consulting Services</div>
-      <div class="sdoc-services">
+      <div class="svc-section-label">Consulting Services</div>
+      <div class="svc-grid">
 
-        <div class="sdoc-service-card">
-          <div class="sdoc-service-num">SVC &mdash; 01</div>
-          <div class="sdoc-service-name">Intelligence<br>Audit</div>
-          <div class="sdoc-service-tagline">Your entry point.</div>
-          <div class="sdoc-service-desc">
+        <div class="svc-card">
+          <div class="svc-num">SVC &mdash; 01</div>
+          <div class="svc-name">Intelligence<br>Audit</div>
+          <div class="svc-tagline">Your entry point.</div>
+          <p class="svc-desc">
             We map your existing intelligence practices — what you're collecting, where it lives, how it reaches decision-makers —
             and deliver a structured gap analysis with prioritized recommendations. Low commitment. High clarity. Natural foundation for everything that follows.
-          </div>
-          <div class="sdoc-service-meta">
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Deliverable</span>
-              <span class="sdoc-meta-val">Findings brief + recommendations report</span>
+          </p>
+          <div class="svc-meta">
+            <div class="svc-meta-row">
+              <span class="svc-meta-label">Deliverable</span>
+              <span class="svc-meta-val">Findings brief + recommendations report</span>
             </div>
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Starting at</span>
-              <span class="sdoc-meta-price">$2,500</span>
+            <div class="svc-meta-row">
+              <span class="svc-price-label">Starting at</span>
+              <span class="svc-price">$2,500</span>
             </div>
           </div>
         </div>
 
-        <div class="sdoc-service-card">
-          <div class="sdoc-service-num">SVC &mdash; 02</div>
-          <div class="sdoc-service-name">Program<br>Intelligence Brief</div>
-          <div class="sdoc-service-tagline">Targeted open-source depth.</div>
-          <div class="sdoc-service-desc">
+        <div class="svc-card">
+          <div class="svc-num">SVC &mdash; 02</div>
+          <div class="svc-name">Program<br>Intelligence Brief</div>
+          <div class="svc-tagline">Targeted open-source depth.</div>
+          <p class="svc-desc">
             A structured OSINT deep-dive on a specific platform, program, contract vehicle, or competitor organization.
             Sourced from open regulatory filings, aviation registries, government procurement databases, and AIS's
             curated aerospace intelligence network. Fixed scope, fixed deliverable, no ambiguity.
-          </div>
-          <div class="sdoc-service-meta">
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Deliverable</span>
-              <span class="sdoc-meta-val">Structured intelligence brief, sourced</span>
+          </p>
+          <div class="svc-meta">
+            <div class="svc-meta-row">
+              <span class="svc-meta-label">Deliverable</span>
+              <span class="svc-meta-val">Structured intelligence brief, sourced</span>
             </div>
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Starting at</span>
-              <span class="sdoc-meta-price">$1,500</span>
+            <div class="svc-meta-row">
+              <span class="svc-price-label">Starting at</span>
+              <span class="svc-price">$1,500</span>
             </div>
           </div>
         </div>
 
-        <div class="sdoc-service-card">
-          <div class="sdoc-service-num">SVC &mdash; 03</div>
-          <div class="sdoc-service-name">Collection<br>Architecture Review</div>
-          <div class="sdoc-service-tagline">For organizations building to last.</div>
-          <div class="sdoc-service-desc">
+        <div class="svc-card">
+          <div class="svc-num">SVC &mdash; 03</div>
+          <div class="svc-name">Collection<br>Architecture Review</div>
+          <div class="svc-tagline">For organizations building to last.</div>
+          <p class="svc-desc">
             For organizations ready to build or formalize a permanent intelligence capability. We assess your sources,
             tools, collection workflows, and dissemination pipeline — then deliver a practical blueprint for a
             sustainable, in-house OSINT function built to your operational tempo and resource constraints.
-          </div>
-          <div class="sdoc-service-meta">
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Deliverable</span>
-              <span class="sdoc-meta-val">Assessment report + architecture blueprint</span>
+          </p>
+          <div class="svc-meta">
+            <div class="svc-meta-row">
+              <span class="svc-meta-label">Deliverable</span>
+              <span class="svc-meta-val">Assessment report + architecture blueprint</span>
             </div>
-            <div class="sdoc-meta-row">
-              <span class="sdoc-meta-label">Starting at</span>
-              <span class="sdoc-meta-price">$4,000</span>
+            <div class="svc-meta-row">
+              <span class="svc-price-label">Starting at</span>
+              <span class="svc-price">$4,000</span>
             </div>
           </div>
         </div>
@@ -409,32 +378,31 @@
       </div>
 
       <!-- Engagement model -->
-      <div class="sdoc-section-label">Engagement Model</div>
-      <div class="sdoc-engagement-row">
-        <div class="sdoc-eng-block">
-          <div class="sdoc-eng-title">How Engagements Work</div>
-          <div class="sdoc-eng-body">
-            All projects are scoped and priced before work begins. Scope, deliverables, timeline, and pricing
-            are agreed in writing upfront — no ambiguity, no scope creep. Pricing scales with organizational
-            size and engagement complexity. The starting rates listed are calibrated for small and mid-size
-            operators; enterprise and prime contractor engagements are scoped individually.
+      <div class="svc-section-label">Engagement Model</div>
+      <div class="svc-eng-grid">
+        <div class="svc-eng-block">
+          <div class="svc-eng-title">How Engagements Work</div>
+          <div class="svc-eng-body">
+            <p>All projects are scoped and priced before work begins.</p>
+            <p class="svc-trust-anchor">Scope, deliverables, timeline, and pricing are agreed in writing upfront — no ambiguity, no scope creep.</p>
+            <p>Pricing scales with organizational size and engagement complexity. The starting rates listed are calibrated for small and mid-size operators; enterprise and prime contractor engagements are scoped individually.</p>
           </div>
         </div>
-        <div class="sdoc-eng-block">
-          <div class="sdoc-eng-title">Who We Work With</div>
-          <div class="sdoc-eng-body">
-            Applied serves small to mid-size businesses including those in the aerospace, defense, and intelligence sectors.
-            If you're building, bidding, or competing in this space, we want to help your firm succeed.
+        <div class="svc-eng-block">
+          <div class="svc-eng-title">Who We Work With</div>
+          <div class="svc-eng-body">
+            <p>Applied serves small to mid-size businesses including those in the aerospace, defense, and intelligence sectors.
+            If you're building, bidding, or competing in this space, we want to help your firm succeed.</p>
           </div>
         </div>
       </div>
 
-      <!-- Document footer -->
-      <div class="sdoc-footer">
-        <div class="sdoc-footer-left">
+      <!-- Document footer contact block -->
+      <div class="svc-doc-footer">
+        <div class="svc-doc-footer-left">
           Applied Information Services, LLC &nbsp;&middot;&nbsp; United States &nbsp;&middot;&nbsp; <span class="ais-copyright-year"></span>
         </div>
-        <div class="sdoc-footer-contact">
+        <div class="svc-doc-footer-right">
           <a href="mailto:info@appliedinformationservices.com">info@appliedinformationservices.com</a><br>
           appliedinformationservices.com
         </div>
