@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIGIL — ISR Flight Pattern Planner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    header {
+      background-color: #141414;
+      border-bottom: 1px solid #2a2a2a;
+      padding: 16px 24px;
+    }
+    header h1 {
+      color: #00ff88;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .layout {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .layout { flex-direction: row; align-items: flex-start; padding: 24px; gap: 24px; }
+    }
+    .panel {
+      background-color: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 24px;
+      flex: 1;
+    }
+    @media (max-width: 767px) {
+      .panel { border-radius: 0; border-left: none; border-right: none; border-top: none; }
+    }
+    .panel h2 {
+      color: #00ff88;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #2a2a2a;
+      padding-bottom: 12px;
+    }
+    .field { margin-bottom: 16px; }
+    label {
+      display: block;
+      color: #00ff88;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="number"] {
+      display: block;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      background-color: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-size: 1rem;
+      font-family: 'Courier New', monospace;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="text"]:focus, input[type="number"]:focus { border-color: #00ff88; }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #generate-btn {
+      display: block;
+      width: 100%;
+      min-height: 44px;
+      margin-top: 8px;
+      background-color: #00ff88;
+      color: #0a0a0a;
+      padding: 10px 20px;
+    }
+    #generate-btn:disabled { background-color: #004422; color: #00aa55; cursor: not-allowed; }
+    .error-msg {
+      color: #ff4444;
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border: 1px solid #ff4444;
+      border-radius: 4px;
+      background-color: #1a0000;
+    }
+    .summary {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      background-color: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0a0a0a;
+      background-color: #00ff88;
+      border-radius: 4px;
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+    .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .tab-btn {
+      flex: 1;
+      min-height: 44px;
+      background-color: #0a0a0a;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 10px 8px;
+      font-size: 0.72rem;
+    }
+    .tab-btn.active { background-color: #00ff88; color: #0a0a0a; border-color: #00ff88; }
+    .tab-content { margin-bottom: 12px; }
+    .output-area {
+      display: block;
+      width: 100%;
+      min-height: 200px;
+      padding: 12px;
+      background-color: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .output-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .count { font-size: 0.72rem; color: #888; letter-spacing: 0.06em; text-transform: uppercase; }
+    #copy-btn {
+      min-height: 44px;
+      padding: 10px 20px;
+      background-color: #0a0a0a;
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      font-size: 0.72rem;
+    }
+    .copy-msg { font-size: 0.72rem; color: #00ff88; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 8px; }
+
+    /* --- Mission profile presets --- */
+    .preset-label {
+      display: block;
+      color: #00ff88;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .preset-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .preset-btn {
+      flex: 1;
+      min-width: 64px;
+      min-height: 44px;
+      background-color: #0a0a0a;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 6px 4px;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+    }
+    .preset-btn.active {
+      background-color: #00ff88;
+      color: #0a0a0a;
+      border-color: #00ff88;
+    }
+
+    /* --- Compliance table --- */
+    .compliance-section {
+      margin-bottom: 16px;
+    }
+    .compliance-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #00ff88;
+      margin-bottom: 8px;
+    }
+    .compliance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+    }
+    .compliance-table th {
+      color: #888;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 4px 6px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .compliance-table td {
+      padding: 5px 6px;
+      border-bottom: 1px solid #1a1a1a;
+      color: #e0e0e0;
+    }
+    .compliance-table tr:last-child td { border-bottom: none; }
+    .chk-pass  { color: #00ff88; font-weight: 600; }
+    .chk-fail  { color: #ff4444; font-weight: 600; }
+    .chk-unkn  { color: #555; }
+    .result-pass { color: #00ff88; font-weight: 600; letter-spacing: 0.06em; }
+    .result-fail { color: #ff4444; font-weight: 600; letter-spacing: 0.06em; }
+
+    /* --- Orbital metrics strip --- */
+    .metrics-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .metric-chip {
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      color: #e0e0e0;
+      background-color: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 4px 10px;
+    }
+    .metric-chip span { color: #00ff88; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>VIGIL</h1>
+  <p style="color:#888;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">ISR Flight Pattern Planner</p>
+</header>
+
+<main class="layout">
+  <section class="panel" id="input-panel">
+    <h2>Mission Parameters</h2>
+    <form id="planner-form" novalidate>
+      <div>
+        <span class="preset-label">Pattern Type</span>
+        <div class="preset-row" id="pattern-row">
+          <button type="button" class="preset-btn active" data-pattern="circular">CIRCULAR</button>
+          <button type="button" class="preset-btn" data-pattern="racetrack">RACETRACK</button>
+          <button type="button" class="preset-btn" data-pattern="figureeight">FIGURE-8</button>
+        </div>
+      </div>
+      <div>
+        <span class="preset-label">Mission Profile</span>
+        <div class="preset-row" id="preset-row">
+          <button type="button" class="preset-btn" data-radius="0.8"  data-points="16">INCIDENT</button>
+          <button type="button" class="preset-btn" data-radius="1.5"  data-points="12">SEARCH</button>
+          <button type="button" class="preset-btn" data-radius="3.0"  data-points="8">ISR</button>
+          <button type="button" class="preset-btn" data-radius="12.0" data-points="8">SURVEY</button>
+          <button type="button" class="preset-btn" data-radius="2.5"  data-points="12">CIRCLING</button>
+          <button type="button" class="preset-btn" data-points="36">ARC</button>
+        </div>
+      </div>
+      <div class="field" id="field-dir-toggle">
+        <label for="dir-toggle">Orbit Direction</label>
+        <button type="button" id="dir-toggle" style="display:block;width:100%;min-height:44px;background-color:#0a0a0a;color:#e0e0e0;border:1px solid #2a2a2a;border-radius:4px;padding:10px 12px;font-family:'Courier New',monospace;font-size:1rem;text-align:left;letter-spacing:0;text-transform:none;">CW — Clockwise</button>
+      </div>
+      <div class="field">
+        <label for="departure">Departure ICAO</label>
+        <input type="text" id="departure" placeholder="KJFK" maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="arrival">Arrival ICAO</label>
+        <input type="text" id="arrival" placeholder="KDCA" maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="target_lat">Target Latitude</label>
+        <input type="number" id="target_lat" placeholder="40.0000" step="0.0001" min="-90" max="90">
+      </div>
+      <div class="field">
+        <label for="target_lon">Target Longitude</label>
+        <input type="number" id="target_lon" placeholder="-75.0000" step="0.0001" min="-180" max="180">
+      </div>
+      <div class="field">
+        <label for="radius_nm">Radius (NM)</label>
+        <input type="number" id="radius_nm" value="5.0" step="0.1" min="0.1">
+      </div>
+      <div class="field" id="field-num-points">
+        <label id="label-num-points" for="num_points">Waypoints</label>
+        <input type="number" id="num_points" value="8" step="1" min="3" max="64">
+      </div>
+      <div class="field" id="field-leg-length" hidden>
+        <label for="leg_length_nm">Leg Length (NM)</label>
+        <input type="number" id="leg_length_nm" value="5.0" step="0.5" min="0.5">
+      </div>
+      <div class="field" id="field-inbound-course" hidden>
+        <label for="inbound_course">Inbound Course (°) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— also Figure-8 axis</span></label>
+        <input type="number" id="inbound_course" value="270" step="1" min="0" max="359">
+      </div>
+      <div class="field">
+        <label for="airspeed_kts">Airspeed (kts) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— optional</span></label>
+        <input type="number" id="airspeed_kts" placeholder="90" step="1" min="1">
+      </div>
+      <div class="field">
+        <label for="altitude_ft">Altitude (ft MSL) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— optional</span></label>
+        <input type="number" id="altitude_ft" placeholder="3000" step="100" min="0">
+      </div>
+      <div id="form-error" class="error-msg" hidden></div>
+      <button type="submit" id="generate-btn">Generate Orbit</button>
+    </form>
+  </section>
+
+  <section class="panel" id="output-panel" hidden>
+    <h2>Mission Output</h2>
+    <div id="mission-summary" class="summary"></div>
+    <div id="accuracy-badge" class="badge"></div>
+
+    <div id="metrics-strip" class="metrics-strip" hidden></div>
+
+    <div id="compliance-section" class="compliance-section" hidden>
+      <div class="compliance-title">Profile Compliance</div>
+      <table class="compliance-table">
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Drift</th>
+            <th>Turn Rate</th>
+            <th>Altitude</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="compliance-body"></tbody>
+      </table>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" role="tab" data-tab="skyvector">SkyVector</button>
+      <button class="tab-btn" role="tab" data-tab="simbrief">SimBrief</button>
+      <button class="tab-btn" role="tab" data-tab="plaintext">Plain Text</button>
+      <button class="tab-btn" role="tab" data-tab="arcbrief">Arc Brief</button>
+    </div>
+
+    <div id="tab-skyvector" class="tab-content">
+      <textarea id="out-skyvector" class="output-area" readonly spellcheck="false"></textarea>
+    </div>
+    <div id="tab-simbrief" class="tab-content" hidden>
+      <textarea id="out-simbrief" class="output-area" readonly spellcheck="false"></textarea>
+    </div>
+    <div id="tab-plaintext" class="tab-content" hidden>
+      <textarea id="out-plaintext" class="output-area" readonly spellcheck="false"></textarea>
+    </div>
+    <div id="tab-arcbrief" class="tab-content" hidden>
+      <textarea id="out-arcbrief" class="output-area" readonly spellcheck="false"></textarea>
+    </div>
+
+    <div class="output-footer">
+      <span id="waypoint-count" class="count"></span>
+      <button id="copy-btn" type="button">Copy to Clipboard</button>
+    </div>
+    <div id="copy-msg" class="copy-msg" hidden>Copied.</div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // --- Mission profile definitions (from orbit_detector_sbs) ---
+  var PROFILES = {
+    INCIDENT: { driftCapNm: 0.8,  minTurnDps: 3.5, altMin: 200,  altMax: 5000 },
+    SEARCH:   { driftCapNm: 1.5,  minTurnDps: null,altMin: null, altMax: null  },
+    ISR:      { driftCapNm: 3.0,  minTurnDps: 0.6, altMin: 1500, altMax: null  },
+    SURVEY:   { driftCapNm: 12.0, minTurnDps: null,altMin: null, altMax: null  },
+    CIRCLING: { driftCapNm: 1.35, minTurnDps: null,altMin: null, altMax: null  },
+  };
+
+  // --- Orbital performance metrics ---
+  function computeOrbitalMetrics(radiusNm, airspeedKts) {
+    if (!airspeedKts || airspeedKts <= 0) return null;
+    var circumferenceFt = 2 * Math.PI * radiusNm * 6076.115;
+    var speedFtPerSec   = airspeedKts * 1.68781;
+    var periodSec       = circumferenceFt / speedFtPerSec;
+    var turnRateDps     = 360 / periodSec;
+    return {
+      periodSec:   Math.round(periodSec),
+      periodMin:   (periodSec / 60).toFixed(1),
+      turnRateDps: turnRateDps.toFixed(2),
+    };
+  }
+
+  // --- Profile compliance check ---
+  // Returns per-profile result: { drift, turnRate, altitude, pass }
+  // Each field: true=pass, false=fail, null=unknown (data not provided)
+  function checkCompliance(radiusNm, airspeedKts, altFt) {
+    var metrics = computeOrbitalMetrics(radiusNm, airspeedKts);
+    var turnRate = metrics ? parseFloat(metrics.turnRateDps) : null;
+    var hasAlt   = altFt !== null && !isNaN(altFt);
+    var result   = {};
+
+    for (var name in PROFILES) {
+      var p = PROFILES[name];
+      var drift    = radiusNm <= p.driftCapNm;
+      var turn     = p.minTurnDps === null ? null
+                   : (turnRate !== null ? turnRate >= p.minTurnDps : null);
+      var alt      = (p.altMin === null && p.altMax === null) ? null
+                   : !hasAlt ? null
+                   : (p.altMin !== null && altFt < p.altMin) ? false
+                   : (p.altMax !== null && altFt > p.altMax) ? false
+                   : true;
+
+      // Overall pass: drift must pass; turn/alt pass if data available, else ignored
+      var pass = drift
+        && (turn  === null || turn  === true)
+        && (alt   === null || alt   === true);
+
+      result[name] = { drift: drift, turnRate: turn, altitude: alt, pass: pass };
+    }
+    return result;
+  }
+
+  // --- Render compliance table and metrics strip ---
+  function renderCompliance(radiusNm, airspeedKts, altFt) {
+    var metricsEl    = document.getElementById('metrics-strip');
+    var compSection  = document.getElementById('compliance-section');
+    var tbody        = document.getElementById('compliance-body');
+    var metrics      = computeOrbitalMetrics(radiusNm, airspeedKts);
+    var compliance   = checkCompliance(radiusNm, airspeedKts, altFt);
+
+    // Metrics strip
+    if (metrics) {
+      metricsEl.innerHTML =
+        '<div class="metric-chip">Period: <span>' + metrics.periodMin + ' min</span></div>' +
+        '<div class="metric-chip">Turn Rate: <span>' + metrics.turnRateDps + ' °/s</span></div>';
+      metricsEl.hidden = false;
+    } else {
+      metricsEl.innerHTML = '';
+      metricsEl.hidden = true;
+    }
+
+    // Compliance table
+    function chk(val, pass, fail) {
+      if (val === null) return '<span class="chk-unkn">—</span>';
+      return val ? '<span class="chk-pass">' + pass + '</span>'
+                 : '<span class="chk-fail">' + fail + '</span>';
+    }
+
+    tbody.innerHTML = '';
+    for (var name in compliance) {
+      var c   = compliance[name];
+      var p   = PROFILES[name];
+      var row = document.createElement('tr');
+      row.innerHTML =
+        '<td>' + name + '</td>' +
+        '<td>' + chk(c.drift, '✓ ≤' + p.driftCapNm, '✗ >' + p.driftCapNm) + '</td>' +
+        '<td>' + chk(c.turnRate,
+          '✓ ≥' + p.minTurnDps + '°/s',
+          '✗ &lt;' + p.minTurnDps + '°/s') + '</td>' +
+        '<td>' + chk(c.altitude, '✓', '✗') + '</td>' +
+        '<td class="' + (c.pass ? 'result-pass' : 'result-fail') + '">' +
+          (c.pass ? 'PASS' : 'FAIL') + '</td>';
+      tbody.appendChild(row);
+    }
+    compSection.hidden = false;
+  }
+
+  // --- Core math (direct port of the Python) ---
+  function generateOrbit(centerLat, centerLon, radiusNm, numPoints) {
+    var NM_TO_DEG_LAT = 1 / 60;
+    var NM_PER_DEG_LON = 60;
+    var lonCompression = Math.cos(centerLat * Math.PI / 180);
+    var waypoints = [];
+    for (var i = 0; i < numPoints; i++) {
+      var angle = (2 * Math.PI * i) / numPoints;
+      var lat = centerLat + (radiusNm * Math.cos(angle) * NM_TO_DEG_LAT);
+      var lon = centerLon + (radiusNm * Math.sin(angle) / (NM_PER_DEG_LON * lonCompression));
+      waypoints.push([parseFloat(lat.toFixed(6)), parseFloat(lon.toFixed(6))]);
+    }
+    return waypoints;
+  }
+
+  // --- Destination point: lat/lon given origin, bearing (deg, aviation convention), distance (NM) ---
+  function destinationPoint(lat, lon, bearingDeg, distNm) {
+    var NM_TO_DEG_LAT = 1 / 60;
+    var lonComp = Math.cos(lat * Math.PI / 180);
+    var brRad = bearingDeg * Math.PI / 180;
+    return [
+      lat + distNm * Math.cos(brRad) * NM_TO_DEG_LAT,
+      lon + distNm * Math.sin(brRad) / (60 * lonComp)
+    ];
+  }
+
+  // --- Racetrack generator ---
+  // courseDeg: heading of the outbound leg (aircraft flies this heading away from fix)
+  // The fix (reference point) is at nearEnd (courseDeg + 180° side from center)
+  // Racetrack center = midpoint of the two parallel straight legs
+  // direction: 'CW' = right-hand turns (standard holding), 'CCW' = left-hand
+  function generateRacetrack(centerLat, centerLon, radiusNm, legLengthNm, courseDeg, numSemiPts, direction) {
+    var halfLeg  = legLengthNm / 2;
+    var oppCourse = (courseDeg + 180) % 360;
+
+    // End points on the straight-leg axis
+    var farEnd  = destinationPoint(centerLat, centerLon, courseDeg,  halfLeg);
+    var nearEnd = destinationPoint(centerLat, centerLon, oppCourse, halfLeg);
+
+    // Perpendicular offset direction for turn centers
+    // CW = right turns: offset to the right of the outbound heading
+    var perpOffset = direction === 'CW'
+      ? (courseDeg + 90) % 360
+      : (courseDeg - 90 + 360) % 360;
+
+    var farCenter  = destinationPoint(farEnd[0],  farEnd[1],  perpOffset, radiusNm);
+    var nearCenter = destinationPoint(nearEnd[0], nearEnd[1], perpOffset, radiusNm);
+
+    // For an arc point: position on circle = center + radiusNm at bearing `b`
+    function arcPt(cx, cy, b) {
+      return destinationPoint(cx, cy, b, radiusNm);
+    }
+
+    var waypoints = [];
+
+    // At farEnd: turn center is at farCenter (to the right of outbound).
+    // Aircraft arrives from nearEnd going courseDeg. Relative to farCenter,
+    // the aircraft is at bearing (oppCourse + 90) for CW, or different for CCW.
+    // Bearing FROM farCenter TO aircraft at arc entry:
+    //   CW:  aircraft is on the side opposite to perpOffset from farCenter, i.e. oppCourse
+    //   CCW: opposite side
+    var farArcEntry  = direction === 'CW' ? oppCourse : courseDeg;
+    var nearArcEntry = direction === 'CW' ? courseDeg : oppCourse;
+
+    // Arc sweep: 180°, CW = clockwise = increasing bearing; CCW = decreasing
+    var sweepSign = direction === 'CW' ? 1 : -1;
+    var stepAngle = 180 / numSemiPts;
+
+    // Outbound leg: from nearEnd to farEnd (heading = courseDeg)
+    // We emit only the turn waypoints + the transition points; straight legs are defined
+    // by the arc endpoints. Emit: farEnd arc, then nearEnd arc; waypoints trace full loop.
+
+    // Far turn arc (numSemiPts + 1 points including start and end)
+    for (var i = 0; i <= numSemiPts; i++) {
+      var b = (farArcEntry + sweepSign * i * stepAngle + 360) % 360;
+      var pt = arcPt(farCenter[0], farCenter[1], b);
+      waypoints.push([parseFloat(pt[0].toFixed(6)), parseFloat(pt[1].toFixed(6))]);
+    }
+
+    // Near turn arc
+    for (var j = 0; j <= numSemiPts; j++) {
+      var b2 = (nearArcEntry + sweepSign * j * stepAngle + 360) % 360;
+      var pt2 = arcPt(nearCenter[0], nearCenter[1], b2);
+      waypoints.push([parseFloat(pt2[0].toFixed(6)), parseFloat(pt2[1].toFixed(6))]);
+    }
+
+    return waypoints;
+  }
+
+  // --- Figure-8 generator ---
+  // Two equal-radius lobes tangent at centerLat/centerLon.
+  // axisDeg: bearing along which lobe centers are offset from center.
+  // Lobe 1 (CW) center: center + radiusNm along axisDeg
+  // Lobe 2 (CCW) center: center + radiusNm along axisDeg + 180
+  // Both lobes start/end at the center crossing point.
+  function generateFigureEight(centerLat, centerLon, radiusNm, axisDeg, numPointsPerLobe) {
+    var lobe1Center = destinationPoint(centerLat, centerLon, axisDeg, radiusNm);
+    var lobe2Center = destinationPoint(centerLat, centerLon, (axisDeg + 180) % 360, radiusNm);
+
+    var waypoints = [];
+
+    // Lobe 1: CW. Center is at lobe1Center.
+    // Center crossing point is at bearing (axisDeg + 180) from lobe1Center.
+    // Aircraft flies CW → bearing increases.
+    var lobe1Start = (axisDeg + 180) % 360;
+    for (var i = 0; i < numPointsPerLobe; i++) {
+      var b = (lobe1Start + i * (360 / numPointsPerLobe)) % 360;
+      var brRad = b * Math.PI / 180;
+      var lonComp1 = Math.cos(lobe1Center[0] * Math.PI / 180);
+      waypoints.push([
+        parseFloat((lobe1Center[0] + radiusNm * Math.cos(brRad) / 60).toFixed(6)),
+        parseFloat((lobe1Center[1] + radiusNm * Math.sin(brRad) / (60 * lonComp1)).toFixed(6))
+      ]);
+    }
+
+    // Lobe 2: CCW. Center is at lobe2Center.
+    // Center crossing point is at bearing axisDeg from lobe2Center.
+    // Aircraft flies CCW → bearing decreases.
+    var lobe2Start = axisDeg % 360;
+    for (var j = 0; j < numPointsPerLobe; j++) {
+      var b2 = (lobe2Start - j * (360 / numPointsPerLobe) + 360) % 360;
+      var brRad2 = b2 * Math.PI / 180;
+      var lonComp2 = Math.cos(lobe2Center[0] * Math.PI / 180);
+      waypoints.push([
+        parseFloat((lobe2Center[0] + radiusNm * Math.cos(brRad2) / 60).toFixed(6)),
+        parseFloat((lobe2Center[1] + radiusNm * Math.sin(brRad2) / (60 * lonComp2)).toFixed(6))
+      ]);
+    }
+
+    return waypoints;
+  }
+
+  function computeMaxErrorFeet(radiusNm, numPoints) {
+    var halfAngle = Math.PI / numPoints;
+    var sagittaNm = radiusNm * (1 - Math.cos(halfAngle));
+    return Math.round(sagittaNm * 6076.115 * 10) / 10;
+  }
+
+  function formatSkyVector(waypoints) {
+    return waypoints.map(function (wp) {
+      return wp[0].toFixed(4) + ',' + wp[1].toFixed(4);
+    }).join('\n');
+  }
+
+  function formatSimBriefCSV(waypoints) {
+    var lines = ['LATITUDE,LONGITUDE'];
+    waypoints.forEach(function (wp) {
+      lines.push(wp[0].toFixed(4) + ',' + wp[1].toFixed(4));
+    });
+    return lines.join('\n');
+  }
+
+  function formatPlainText(waypoints) {
+    return waypoints.map(function (wp, i) {
+      var num = String(i + 1).padStart(2, '0');
+      var lat = (wp[0] >= 0 ? '+' : '') + wp[0].toFixed(6);
+      var lon = (wp[1] >= 0 ? '+' : '') + wp[1].toFixed(6);
+      return 'WP' + num + ': ' + lat + ' ' + lon;
+    }).join('\n');
+  }
+
+  // --- Arc Brief format (Turn N / Twist N) ---
+  // bearing = bearing FROM target TO aircraft (the "radial" equivalent)
+  // heading = intercept heading pilot should fly (perpendicular to bearing)
+  function formatArcBrief(waypoints, radiusNm, numPoints, direction) {
+    var degPerSeg = 360 / numPoints;
+    var turnTwist = Math.round(degPerSeg);
+    var dirLabel  = direction === 'CCW' ? 'COUNTERCLOCKWISE' : 'CLOCKWISE';
+    var lines = [
+      'ARC BRIEF — ' + radiusNm + ' NM | ' + dirLabel + ' | ' + numPoints + ' SEGMENTS',
+      'TURN ' + turnTwist + ' / TWIST ' + turnTwist,
+      '',
+      'SEG  BEARING  HEADING  LAT           LON',
+    ];
+    for (var i = 0; i < waypoints.length; i++) {
+      var bearing, heading;
+      if (direction === 'CCW') {
+        bearing = ((360 - i * degPerSeg) % 360 + 360) % 360;
+        heading = (bearing - 90 + 360) % 360;
+      } else {
+        bearing = (i * degPerSeg) % 360;
+        heading = (bearing + 90) % 360;
+      }
+      var wp  = waypoints[i];
+      var lat = (wp[0] >= 0 ? '+' : '') + wp[0].toFixed(6);
+      var lon = (wp[1] >= 0 ? '+' : '') + wp[1].toFixed(6);
+      lines.push(
+        String(i + 1).padStart(2, '0') + '   ' +
+        String(Math.round(bearing)).padStart(3, '0') + '\u00b0     ' +
+        String(Math.round(heading)).padStart(3, '0') + '\u00b0   ' +
+        lat + '   ' + lon
+      );
+    }
+    return lines.join('\n');
+  }
+
+  // --- Racetrack / Figure-8 pattern brief ---
+  function formatPatternBrief(waypoints, patType, radiusNm, legLengthNm, courseDeg, numSemiPts, direction, axisDeg) {
+    var lines = [];
+    if (patType === 'racetrack') {
+      var dirLabel = direction === 'CCW' ? 'COUNTERCLOCKWISE' : 'CLOCKWISE';
+      lines.push('RACETRACK BRIEF \u2014 ' + radiusNm + ' NM TURNS | ' + legLengthNm + ' NM LEGS | ' + dirLabel);
+      lines.push('OUTBOUND COURSE: ' + String(Math.round(courseDeg)).padStart(3, '0') + '\u00b0  INBOUND: ' + String(Math.round((courseDeg + 180) % 360)).padStart(3, '0') + '\u00b0');
+      lines.push('');
+      lines.push('WP   TYPE    LAT           LON');
+      var totalPts = waypoints.length;
+      var semiSize = numSemiPts + 1;
+      for (var i = 0; i < totalPts; i++) {
+        var wp = waypoints[i];
+        var lat = (wp[0] >= 0 ? '+' : '') + wp[0].toFixed(6);
+        var lon = (wp[1] >= 0 ? '+' : '') + wp[1].toFixed(6);
+        var segType;
+        if (i < semiSize) {
+          segType = 'TURN-1';
+        } else {
+          segType = 'TURN-2';
+        }
+        lines.push(String(i + 1).padStart(2, '0') + '   ' + segType + '  ' + lat + '   ' + lon);
+      }
+    } else if (patType === 'figureeight') {
+      lines.push('FIGURE-8 BRIEF \u2014 ' + radiusNm + ' NM LOBES | AXIS: ' + String(Math.round(axisDeg)).padStart(3, '0') + '\u00b0/' + String(Math.round((axisDeg + 180) % 360)).padStart(3, '0') + '\u00b0');
+      lines.push('LOBE 1 (CW) \u2014 LOBE 2 (CCW)');
+      lines.push('');
+      lines.push('WP   LOBE  LAT           LON');
+      var halfLen = Math.floor(waypoints.length / 2);
+      for (var k = 0; k < waypoints.length; k++) {
+        var wp2 = waypoints[k];
+        var lat2 = (wp2[0] >= 0 ? '+' : '') + wp2[0].toFixed(6);
+        var lon2 = (wp2[1] >= 0 ? '+' : '') + wp2[1].toFixed(6);
+        var lobe = k < halfLen ? '1-CW' : '2-CCW';
+        lines.push(String(k + 1).padStart(2, '0') + '   ' + lobe + '  ' + lat2 + '   ' + lon2);
+      }
+    }
+    return lines.join('\n');
+  }
+
+  // --- Pattern type state and field visibility ---
+  var patternType = 'circular';
+
+  function updatePatternFields() {
+    var isCircular    = patternType === 'circular';
+    var isRacetrack   = patternType === 'racetrack';
+    var isFigureEight = patternType === 'figureeight';
+
+    document.getElementById('field-leg-length').hidden    = !isRacetrack;
+    document.getElementById('field-inbound-course').hidden = !(isRacetrack || isFigureEight);
+    document.getElementById('field-dir-toggle').hidden    = isFigureEight;
+
+    // Num-points label
+    var numLabel = document.getElementById('label-num-points');
+    numLabel.textContent = isRacetrack ? 'Points per Turn' : 'Waypoints';
+
+    // Mission profile preset row only relevant for circular
+    document.getElementById('preset-row').style.opacity = isCircular ? '' : '0.4';
+    document.getElementById('preset-row').style.pointerEvents = isCircular ? '' : 'none';
+  }
+
+  document.querySelectorAll('#pattern-row .preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      patternType = btn.dataset.pattern;
+      document.querySelectorAll('#pattern-row .preset-btn').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      updatePatternFields();
+    });
+  });
+
+  // --- Preset button wiring ---
+  var orbitDir = 'CW';
+
+  document.querySelectorAll('#preset-row .preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.radius) document.getElementById('radius_nm').value = btn.dataset.radius;
+      document.getElementById('num_points').value = btn.dataset.points;
+      document.querySelectorAll('#preset-row .preset-btn').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+    });
+  });
+
+  // --- Direction toggle ---
+  var dirToggle = document.getElementById('dir-toggle');
+  dirToggle.addEventListener('click', function () {
+    orbitDir = orbitDir === 'CW' ? 'CCW' : 'CW';
+    dirToggle.textContent = orbitDir === 'CW' ? 'CW \u2014 Clockwise' : 'CCW \u2014 Counterclockwise';
+    dirToggle.style.borderColor = orbitDir === 'CCW' ? '#00ff88' : '#2a2a2a';
+    dirToggle.style.color       = orbitDir === 'CCW' ? '#00ff88' : '#e0e0e0';
+  });
+
+  // --- DOM refs ---
+  var form        = document.getElementById('planner-form');
+  var genBtn      = document.getElementById('generate-btn');
+  var formError   = document.getElementById('form-error');
+  var outputPanel = document.getElementById('output-panel');
+  var summary     = document.getElementById('mission-summary');
+  var badge       = document.getElementById('accuracy-badge');
+  var countEl     = document.getElementById('waypoint-count');
+  var copyBtn     = document.getElementById('copy-btn');
+  var copyMsg     = document.getElementById('copy-msg');
+
+  var outputs = {
+    skyvector: document.getElementById('out-skyvector'),
+    simbrief:  document.getElementById('out-simbrief'),
+    plaintext: document.getElementById('out-plaintext'),
+    arcbrief:  document.getElementById('out-arcbrief'),
+  };
+  var tabPanels = {
+    skyvector: document.getElementById('tab-skyvector'),
+    simbrief:  document.getElementById('tab-simbrief'),
+    plaintext: document.getElementById('tab-plaintext'),
+    arcbrief:  document.getElementById('tab-arcbrief'),
+  };
+
+  var activeTab = 'skyvector';
+
+  function showError(msg) { formError.textContent = msg; formError.hidden = false; }
+  function clearError()   { formError.textContent = '';  formError.hidden = true;  }
+
+  function switchTab(name) {
+    activeTab = name;
+    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.tab === name);
+    });
+    Object.keys(tabPanels).forEach(function (k) { tabPanels[k].hidden = k !== name; });
+    copyMsg.hidden = true;
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearError();
+
+    var departure    = document.getElementById('departure').value.trim().toUpperCase();
+    var arrival      = document.getElementById('arrival').value.trim().toUpperCase();
+    var targetLat    = parseFloat(document.getElementById('target_lat').value);
+    var targetLon    = parseFloat(document.getElementById('target_lon').value);
+    var radiusNm     = parseFloat(document.getElementById('radius_nm').value);
+    var numPoints    = parseInt(document.getElementById('num_points').value, 10);
+    var airspeedRaw  = document.getElementById('airspeed_kts').value.trim();
+    var altitudeRaw  = document.getElementById('altitude_ft').value.trim();
+    var airspeedKts  = airspeedRaw  !== '' ? parseFloat(airspeedRaw)  : null;
+    var altitudeFt   = altitudeRaw  !== '' ? parseFloat(altitudeRaw)  : null;
+    var legLengthNm  = parseFloat(document.getElementById('leg_length_nm').value);
+    var inboundCourse = parseFloat(document.getElementById('inbound_course').value);
+
+    if (!departure || !arrival) { showError('Departure and arrival ICAO codes are required.'); return; }
+    if (isNaN(targetLat) || isNaN(targetLon)) { showError('Target latitude and longitude are required.'); return; }
+    if (targetLat < -90 || targetLat > 90) { showError('Latitude must be between -90 and 90.'); return; }
+    if (targetLon < -180 || targetLon > 180) { showError('Longitude must be between -180 and 180.'); return; }
+    if (isNaN(radiusNm) || radiusNm <= 0) { showError('Radius must be a positive number.'); return; }
+    if (patternType === 'circular' && (isNaN(numPoints) || numPoints < 3 || numPoints > 64)) {
+      showError('Waypoints must be between 3 and 64.'); return;
+    }
+    if (patternType === 'racetrack') {
+      if (isNaN(legLengthNm) || legLengthNm <= 0) { showError('Leg length must be a positive number.'); return; }
+      if (isNaN(inboundCourse)) { showError('Inbound course is required for racetrack.'); return; }
+      if (isNaN(numPoints) || numPoints < 2 || numPoints > 32) { showError('Points per turn must be between 2 and 32.'); return; }
+    }
+    if (patternType === 'figureeight') {
+      if (isNaN(inboundCourse)) { showError('Axis course is required for figure-8.'); return; }
+      if (isNaN(numPoints) || numPoints < 4 || numPoints > 64) { showError('Waypoints per lobe must be between 4 and 64.'); return; }
+    }
+
+    genBtn.disabled = true;
+    genBtn.textContent = 'Generating...';
+
+    // Run synchronously but yield to let the button redraw
+    setTimeout(function () {
+      var waypoints;
+      var summaryText;
+      var maxErrText;
+      var arcBriefText;
+
+      if (patternType === 'racetrack') {
+        // inboundCourse = heading aircraft flies on the inbound leg (toward fix)
+        // outbound heading = inboundCourse + 180 (away from fix)
+        var outboundCourse = (inboundCourse + 180) % 360;
+        waypoints = generateRacetrack(targetLat, targetLon, radiusNm, legLengthNm, outboundCourse, numPoints, orbitDir);
+        var dirLbl = orbitDir === 'CCW' ? 'CCW' : 'CW';
+        summaryText = departure + ' \u2192 ' + arrival +
+          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
+          ' | RACETRACK ' + radiusNm + 'NM \u00d7 ' + legLengthNm + 'NM | ' + dirLbl;
+        maxErrText = 'RACETRACK | ' + waypoints.length + ' pts';
+        arcBriefText = formatPatternBrief(waypoints, 'racetrack', radiusNm, legLengthNm, outboundCourse, numPoints, orbitDir, null);
+
+      } else if (patternType === 'figureeight') {
+        var axisCourse = inboundCourse % 360;
+        waypoints = generateFigureEight(targetLat, targetLon, radiusNm, axisCourse, numPoints);
+        summaryText = departure + ' \u2192 ' + arrival +
+          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
+          ' | FIGURE-8 ' + radiusNm + 'NM | AXIS ' + String(Math.round(axisCourse)).padStart(3, '0') + '\u00b0';
+        maxErrText = 'FIGURE-8 | ' + waypoints.length + ' pts';
+        arcBriefText = formatPatternBrief(waypoints, 'figureeight', radiusNm, null, null, null, null, axisCourse);
+
+      } else {
+        // circular (default)
+        waypoints = generateOrbit(targetLat, targetLon, radiusNm, numPoints);
+        if (orbitDir === 'CCW') waypoints = waypoints.slice().reverse();
+        var maxErr = computeMaxErrorFeet(radiusNm, numPoints);
+        var dirLabel = orbitDir === 'CCW' ? ' | CCW' : ' | CW';
+        summaryText = departure + ' \u2192 ' + arrival +
+          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
+          ' | RADIUS: ' + radiusNm + ' NM' + dirLabel;
+        maxErrText = 'Max Error: ' + maxErr + ' ft';
+        arcBriefText = formatArcBrief(waypoints, radiusNm, numPoints, orbitDir);
+      }
+
+      summary.textContent     = summaryText;
+      badge.textContent       = maxErrText;
+      countEl.textContent     = waypoints.length + ' waypoints';
+      outputs.skyvector.value = formatSkyVector(waypoints);
+      outputs.simbrief.value  = formatSimBriefCSV(waypoints);
+      outputs.plaintext.value = formatPlainText(waypoints);
+      outputs.arcbrief.value  = arcBriefText;
+
+      // Update Arc Brief tab label based on pattern
+      var arcTabBtn = document.querySelector('.tab-btn[data-tab="arcbrief"]');
+      if (patternType === 'racetrack') arcTabBtn.textContent = 'Racetrack Brief';
+      else if (patternType === 'figureeight') arcTabBtn.textContent = 'Fig-8 Brief';
+      else arcTabBtn.textContent = 'Arc Brief';
+
+      renderCompliance(radiusNm, airspeedKts, altitudeFt);
+
+      outputPanel.hidden = false;
+      switchTab('skyvector');
+
+      genBtn.disabled    = false;
+      genBtn.textContent = 'Generate';
+    }, 0);
+  });
+
+  copyBtn.addEventListener('click', function () {
+    var text = outputs[activeTab].value;
+    if (!text) return;
+    copyMsg.hidden = true;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        copyMsg.hidden = false;
+      }).catch(function () { fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    var ta = outputs[activeTab];
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    try { document.execCommand('copy'); copyMsg.hidden = false; } catch (e) {}
+  }
+})();
+</script>
+
+</body>
+</html>
