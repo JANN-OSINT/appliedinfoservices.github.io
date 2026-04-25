@@ -3,17 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VIGIL — ISR Flight Pattern Planner</title>
+  <meta name="description" content="VIGIL — ISR Flight Pattern Planner. Generate circular orbits, racetracks, and figure-8 patterns for ISR mission planning.">
+  <title>VIGIL — ISR Planner | Applied Information Services</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CWY00FKP9J');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <!-- Shared site stylesheet (provides footer + crumb styling) -->
+  <link rel="stylesheet" href="../../css/main.css?v=12">
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
       background-color: #0a0a0a;
       color: #e0e0e0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: var(--font-sans);
       font-size: 16px;
       line-height: 1.5;
     }
+    /* Top crumb bar — sits above the tool header on the dark surface */
+    .tool-crumb {
+      background-color: #0a0a0a;
+      padding: 12px 24px 0;
+    }
+    .tool-crumb a {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .tool-crumb a:hover { color: #00ff88; }
     header {
       background-color: #141414;
       border-bottom: 1px solid #2a2a2a;
@@ -75,7 +108,7 @@
       border-radius: 4px;
       color: #e0e0e0;
       font-size: 1rem;
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-mono);
       outline: none;
       -webkit-appearance: none;
       appearance: none;
@@ -110,7 +143,7 @@
       background-color: #1a0000;
     }
     .summary {
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-mono);
       font-size: 0.82rem;
       background-color: #0a0a0a;
       border: 1px solid #2a2a2a;
@@ -153,7 +186,7 @@
       border: 1px solid #2a2a2a;
       border-radius: 4px;
       color: #e0e0e0;
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-mono);
       font-size: 0.82rem;
       line-height: 1.6;
       resize: vertical;
@@ -230,7 +263,7 @@
     .compliance-table {
       width: 100%;
       border-collapse: collapse;
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-mono);
       font-size: 0.75rem;
     }
     .compliance-table th {
@@ -262,7 +295,7 @@
       margin-bottom: 12px;
     }
     .metric-chip {
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-mono);
       font-size: 0.72rem;
       color: #e0e0e0;
       background-color: #0a0a0a;
@@ -274,6 +307,8 @@
   </style>
 </head>
 <body>
+
+<div class="tool-crumb"><a href="../../index.html">&larr; Back to Home</a></div>
 
 <header>
   <h1>VIGIL</h1>
@@ -305,7 +340,7 @@
       </div>
       <div class="field" id="field-dir-toggle">
         <label for="dir-toggle">Orbit Direction</label>
-        <button type="button" id="dir-toggle" style="display:block;width:100%;min-height:44px;background-color:#0a0a0a;color:#e0e0e0;border:1px solid #2a2a2a;border-radius:4px;padding:10px 12px;font-family:'Courier New',monospace;font-size:1rem;text-align:left;letter-spacing:0;text-transform:none;">CW — Clockwise</button>
+        <button type="button" id="dir-toggle" style="display:block;width:100%;min-height:44px;background-color:#0a0a0a;color:#e0e0e0;border:1px solid #2a2a2a;border-radius:4px;padding:10px 12px;font-family:var(--font-mono);font-size:1rem;text-align:left;letter-spacing:0;text-transform:none;">CW — Clockwise</button>
       </div>
       <div class="field">
         <label for="departure">Departure ICAO</label>
@@ -960,6 +995,21 @@
     try { document.execCommand('copy'); copyMsg.hidden = false; } catch (e) {}
   }
 })();
+</script>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  // Inject shared site footer (legal/compliance + .ais-copyright-year)
+  fetch('../../includes/footer.html')
+    .then(function (r) { return r.text(); })
+    .then(function (html) {
+      document.getElementById('footer-placeholder').innerHTML = html;
+      document.querySelectorAll('.ais-copyright-year').forEach(function (el) {
+        el.textContent = new Date().getFullYear();
+      });
+    })
+    .catch(function () { /* footer load failed — page still functional */ });
 </script>
 
 </body>
