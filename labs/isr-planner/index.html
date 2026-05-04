@@ -4,433 +4,842 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VIGIL — ISR Flight Pattern Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-primary:    #0a0c0f;
+      --bg-secondary:  #111318;
+      --bg-tertiary:   #1a1e26;
+      --bg-elevated:   #1f2430;
+      --accent-green:  #00ff88;
+      --accent-amber:  #ffb700;
+      --accent-red:    #ff3b3b;
+      --accent-blue:   #3b8bff;
+      --text-primary:  #e8edf5;
+      --text-secondary:#8a9ab5;
+      --text-muted:    #4a5568;
+      --text-accent:   #00ff88;
+      --border-subtle: #1e2533;
+      --border-active: #2e3a4e;
+      --font-mono:     'Share Tech Mono', monospace;
+      --font-ui:       'Barlow', sans-serif;
+      --font-display:  'Barlow Condensed', sans-serif;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+
     body {
-      background-color: #0a0a0a;
-      color: #e0e0e0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 16px;
+      background-color: var(--bg-primary);
+      background-image:
+        linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
       line-height: 1.5;
+      min-height: 100vh;
     }
-    header {
-      background-color: #141414;
-      border-bottom: 1px solid #2a2a2a;
-      padding: 16px 24px;
-    }
-    header h1 {
-      color: #00ff88;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 2px; }
+
+    /* ── Classification Banner ── */
+    .cls-banner {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 28px;
+      line-height: 28px;
+      background: #1a1200;
+      color: var(--accent-amber);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,183,0,0.18);
     }
-    .layout {
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-active);
+      padding: 12px 24px;
       display: flex;
-      flex-direction: column;
-      max-width: 1200px;
-      margin: 0 auto;
+      align-items: center;
+      justify-content: space-between;
     }
-    @media (min-width: 768px) {
-      .layout { flex-direction: row; align-items: flex-start; padding: 24px; gap: 24px; }
+
+    .brand {
+      border-left: 2px solid var(--accent-green);
+      padding-left: 12px;
     }
-    .panel {
-      background-color: #141414;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 24px;
-      flex: 1;
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-green);
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+    .brand-sub {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+    .header-build {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      letter-spacing: 0.06em;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+    .status-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-green);
+    }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+    }
+    #vigil-canvas {
+      display: block;
+      width: 100%;
+      height: 300px;
     }
     @media (max-width: 767px) {
-      .panel { border-radius: 0; border-left: none; border-right: none; border-top: none; }
+      #vigil-canvas { height: 220px; }
     }
-    .panel h2 {
-      color: #00ff88;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #2a2a2a;
-      padding-bottom: 12px;
+    @keyframes canvas-pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.55; }
     }
-    .field { margin-bottom: 16px; }
-    label {
-      display: block;
-      color: #00ff88;
-      font-size: 0.7rem;
+    .canvas-pulsing { animation: canvas-pulse 0.4s ease-in-out; }
+
+    /* ── Page body / two-col layout ── */
+    .page-body { max-width: 1400px; margin: 0 auto; }
+
+    .main-cols {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (min-width: 768px) {
+      .main-cols {
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 16px;
+      }
+    }
+
+    /* ── Panels ── */
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+    .panel-params { flex: 0 0 40%; }
+    .panel-output { flex: 1; }
+
+    @media (max-width: 767px) {
+      .panel { border-left: none; border-right: none; }
+    }
+
+    .panel-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .panel-hdr-icon { color: var(--accent-green); font-size: 12px; }
+    .panel-hdr-title {
+      font-family: var(--font-display);
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .panel-body { padding: 14px 16px; }
+
+    /* ── Section labels ── */
+    .sec-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
       margin-bottom: 6px;
+      margin-top: 14px;
     }
-    input[type="text"], input[type="number"] {
-      display: block;
-      width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
-      background-color: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      color: #e0e0e0;
-      font-size: 1rem;
-      font-family: 'Courier New', monospace;
-      outline: none;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    input[type="text"]:focus, input[type="number"]:focus { border-color: #00ff88; }
-    button {
-      cursor: pointer;
+    .sec-label:first-child { margin-top: 0; }
+
+    .sec-divider {
       border: none;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      border-top: 1px solid var(--border-subtle);
+      margin: 12px 0;
     }
-    #generate-btn {
-      display: block;
-      width: 100%;
-      min-height: 44px;
-      margin-top: 8px;
-      background-color: #00ff88;
-      color: #0a0a0a;
-      padding: 10px 20px;
+
+    /* ── Pattern type buttons ── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
     }
-    #generate-btn:disabled { background-color: #004422; color: #00aa55; cursor: not-allowed; }
-    .error-msg {
-      color: #ff4444;
-      font-size: 0.82rem;
-      margin-bottom: 10px;
-      padding: 8px 10px;
-      border: 1px solid #ff4444;
-      border-radius: 4px;
-      background-color: #1a0000;
-    }
-    .summary {
-      font-family: 'Courier New', monospace;
-      font-size: 0.82rem;
-      background-color: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      word-break: break-all;
-    }
-    .badge {
-      display: inline-block;
-      font-size: 0.72rem;
+    .pattern-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #0a0a0a;
-      background-color: #00ff88;
-      border-radius: 4px;
-      padding: 4px 10px;
-      margin-bottom: 16px;
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
     }
-    .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .pattern-btn:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-active);
+      color: var(--text-primary);
+    }
+    .pattern-btn.active {
+      background: var(--bg-elevated);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+      box-shadow: inset 2px 0 0 var(--accent-green);
+    }
+
+    /* ── Mission profile buttons ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+    .profile-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+    .profile-btn:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-active);
+    }
+    .profile-btn.active {
+      background: var(--bg-elevated);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    /* ── Direction toggle ── */
+    .dir-toggle {
+      display: flex;
+      align-items: center;
+      height: 36px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+    .dir-opt {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      letter-spacing: 0.08em;
+      transition: background 0.12s, color 0.12s;
+    }
+    .dir-opt.active {
+      background: var(--bg-elevated);
+      color: var(--accent-green);
+    }
+    .dir-sep {
+      width: 1px;
+      height: 100%;
+      background: var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    /* ── Form inputs ── */
+    .field { margin-bottom: 10px; }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .vigil-label {
+      display: block;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .opt-tag {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .input-wrap { position: relative; display: flex; align-items: center; }
+
+    .vigil-input {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-left: 2px solid var(--border-active);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 7px 10px;
+      width: 100%;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+    .vigil-input:focus {
+      border-color: var(--accent-green);
+      border-left-color: var(--accent-green);
+      box-shadow: 0 0 0 1px rgba(0,255,136,0.15);
+    }
+    .vigil-input::placeholder { color: var(--text-muted); }
+    .vigil-input.has-unit { padding-right: 42px; }
+
+    .input-unit {
+      position: absolute;
+      right: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* ── Generate button ── */
+    .gen-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 44px;
+      margin-top: 14px;
+      background: rgba(0,255,136,0.1);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .gen-btn:hover {
+      background: rgba(0,255,136,0.18);
+      box-shadow: 0 0 14px rgba(0,255,136,0.15);
+    }
+    .gen-btn:active { transform: scale(0.99); }
+    .gen-btn:disabled {
+      background: rgba(0,255,136,0.04);
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* ── Error ── */
+    .error-msg {
+      color: var(--accent-red);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--accent-red);
+      border-left-width: 2px;
+      background: rgba(255,59,59,0.07);
+    }
+
+    /* ── Output: mission summary ── */
+    .mission-summary {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-left: 2px solid var(--accent-blue);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      word-break: break-all;
+      line-height: 1.55;
+    }
+    .acc-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bg-primary);
+      background: var(--accent-green);
+      padding: 3px 8px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Metrics strip ── */
+    .metrics-strip {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .metric-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+    }
+    .metric-chip .mv { color: var(--accent-green); }
+
+    /* ── Compliance table ── */
+    .compliance-section { margin-bottom: 12px; }
+    .compliance-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .compliance-title::before {
+      content: '';
+      display: inline-block;
+      width: 2px;
+      height: 10px;
+      background: var(--accent-green);
+      flex-shrink: 0;
+    }
+    .compliance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .compliance-table th {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 5px 8px;
+      border: 1px solid var(--border-subtle);
+    }
+    .compliance-table td {
+      padding: 5px 8px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+    .compliance-table tbody tr:nth-child(odd)  td { background: var(--bg-tertiary); }
+    .compliance-table tbody tr:nth-child(even) td { background: var(--bg-secondary); }
+    .compliance-table tbody tr:hover           td { background: var(--bg-elevated); }
+
+    .chk-pass    { color: var(--accent-green); font-weight: 600; }
+    .chk-fail    { color: var(--accent-red);   font-weight: 600; }
+    .chk-unkn    { color: var(--text-muted); }
+    .result-pass { color: var(--accent-green); font-weight: 600; letter-spacing: 0.06em; }
+    .result-fail { color: var(--accent-red);   font-weight: 600; letter-spacing: 0.06em; }
+
+    /* ── Export tab bar ── */
+    .export-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border-subtle);
+    }
     .tab-btn {
       flex: 1;
-      min-height: 44px;
-      background-color: #0a0a0a;
-      color: #888;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 10px 8px;
-      font-size: 0.72rem;
+      padding: 8px 6px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.12s, border-color 0.12s;
     }
-    .tab-btn.active { background-color: #00ff88; color: #0a0a0a; border-color: #00ff88; }
-    .tab-content { margin-bottom: 12px; }
-    .output-area {
+    .tab-btn:hover  { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--text-primary); border-bottom-color: var(--accent-green); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .vigil-output {
       display: block;
       width: 100%;
-      min-height: 200px;
+      min-height: 160px;
       padding: 12px;
-      background-color: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      color: #e0e0e0;
-      font-family: 'Courier New', monospace;
-      font-size: 0.82rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-left: 2px solid var(--accent-blue);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-primary);
       line-height: 1.6;
       resize: vertical;
       outline: none;
       -webkit-user-select: text;
       user-select: text;
     }
-    .output-footer {
+
+    .output-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 4px;
+      padding-top: 8px;
     }
-    .count { font-size: 0.72rem; color: #888; letter-spacing: 0.06em; text-transform: uppercase; }
-    #copy-btn {
-      min-height: 44px;
-      padding: 10px 20px;
-      background-color: #0a0a0a;
-      color: #00ff88;
-      border: 1px solid #00ff88;
-      font-size: 0.72rem;
-    }
-    .copy-msg { font-size: 0.72rem; color: #00ff88; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 8px; }
-
-    /* --- Mission profile presets --- */
-    .preset-label {
-      display: block;
-      color: #00ff88;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .preset-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #2a2a2a;
-    }
-    .preset-btn {
-      flex: 1;
-      min-width: 64px;
-      min-height: 44px;
-      background-color: #0a0a0a;
-      color: #888;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 6px 4px;
-      font-size: 0.65rem;
-      letter-spacing: 0.06em;
-    }
-    .preset-btn.active {
-      background-color: #00ff88;
-      color: #0a0a0a;
-      border-color: #00ff88;
-    }
-
-    /* --- Compliance table --- */
-    .compliance-section {
-      margin-bottom: 16px;
-    }
-    .compliance-title {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #00ff88;
-      margin-bottom: 8px;
-    }
-    .compliance-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: 'Courier New', monospace;
-      font-size: 0.75rem;
-    }
-    .compliance-table th {
-      color: #888;
-      font-size: 0.65rem;
+    .wp-count {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      text-align: left;
-      padding: 4px 6px;
-      border-bottom: 1px solid #2a2a2a;
     }
-    .compliance-table td {
-      padding: 5px 6px;
-      border-bottom: 1px solid #1a1a1a;
-      color: #e0e0e0;
-    }
-    .compliance-table tr:last-child td { border-bottom: none; }
-    .chk-pass  { color: #00ff88; font-weight: 600; }
-    .chk-fail  { color: #ff4444; font-weight: 600; }
-    .chk-unkn  { color: #555; }
-    .result-pass { color: #00ff88; font-weight: 600; letter-spacing: 0.06em; }
-    .result-fail { color: #ff4444; font-weight: 600; letter-spacing: 0.06em; }
-
-    /* --- Orbital metrics strip --- */
-    .metrics-strip {
+    .copy-btn {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--accent-amber);
+      color: var(--accent-amber);
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.12s;
     }
-    .metric-chip {
-      font-family: 'Courier New', monospace;
-      font-size: 0.72rem;
-      color: #e0e0e0;
-      background-color: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 4px 10px;
-    }
-    .metric-chip span { color: #00ff88; }
+    .copy-btn:hover { background: rgba(255,183,0,0.08); }
+    .copy-btn.copied { border-color: var(--accent-green); color: var(--accent-green); }
+
+    .export-wrap { padding-top: 10px; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>VIGIL</h1>
-  <p style="color:#888;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">ISR Flight Pattern Planner</p>
+<div class="cls-banner">UNCLASSIFIED // FOR TRAINING USE ONLY</div>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-name">VIGIL</div>
+    <div class="brand-sub">ISR Flight Pattern Planner</div>
+  </div>
+  <div class="header-right">
+    <div class="header-build">AIS LABS // BUILD 2.0</div>
+    <div class="status-row">
+      <div class="status-dot"></div>
+      <span class="status-label">System Nominal</span>
+    </div>
+  </div>
 </header>
 
-<main class="layout">
-  <section class="panel" id="input-panel">
-    <h2>Mission Parameters</h2>
-    <form id="planner-form" novalidate>
-      <div>
-        <span class="preset-label">Pattern Type</span>
-        <div style="font-size:0.6rem;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">ISR Orbital</div>
-        <div class="preset-row" id="pattern-row" style="margin-bottom:8px;">
-          <button type="button" class="preset-btn active" data-pattern="circular">CIRCULAR</button>
-          <button type="button" class="preset-btn" data-pattern="figureeight">FIGURE-8</button>
+<div class="page-body">
+  <div class="canvas-wrap">
+    <canvas id="vigil-canvas"></canvas>
+  </div>
+
+  <div class="main-cols">
+
+    <!-- ── Parameters Panel ── -->
+    <section class="panel panel-params">
+      <div class="panel-hdr">
+        <span class="panel-hdr-icon">◈</span>
+        <span class="panel-hdr-title">Mission Parameters</span>
+      </div>
+      <div class="panel-body">
+        <form id="planner-form" novalidate>
+
+          <div class="sec-label">Pattern Type</div>
+          <div class="pattern-grid">
+            <button type="button" class="pattern-btn active" data-pattern="circular">CIRCULAR</button>
+            <button type="button" class="pattern-btn" data-pattern="racetrack">RACETRACK</button>
+            <button type="button" class="pattern-btn" data-pattern="figureeight">FIGURE-8</button>
+            <button type="button" class="pattern-btn" data-pattern="expsquare">EXP SQ</button>
+            <button type="button" class="pattern-btn" data-pattern="sector">SECTOR</button>
+            <button type="button" class="pattern-btn" data-pattern="partrack">PAR TRK</button>
+          </div>
+
+          <hr class="sec-divider">
+
+          <div class="sec-label">Mission Profile</div>
+          <div class="profile-grid" id="preset-row">
+            <button type="button" class="profile-btn" data-radius="0.8"  data-points="16">INCIDENT</button>
+            <button type="button" class="profile-btn" data-radius="1.5"  data-points="12">SEARCH</button>
+            <button type="button" class="profile-btn" data-radius="3.0"  data-points="8">ISR</button>
+            <button type="button" class="profile-btn" data-radius="12.0" data-points="8">SURVEY</button>
+            <button type="button" class="profile-btn" data-radius="2.5"  data-points="12">CIRCLING</button>
+            <button type="button" class="profile-btn" data-points="36">ARC</button>
+          </div>
+
+          <hr class="sec-divider">
+
+          <div id="field-dir-toggle">
+            <div class="vigil-label">Orbit Direction</div>
+            <div class="dir-toggle">
+              <div class="dir-opt" id="dir-ccw">◄ CCW</div>
+              <div class="dir-sep"></div>
+              <div class="dir-opt active" id="dir-cw">CW ►</div>
+            </div>
+          </div>
+
+          <hr class="sec-divider">
+
+          <div class="grid2">
+            <div class="field">
+              <label class="vigil-label" for="departure">Departure ICAO</label>
+              <div class="input-wrap">
+                <input type="text" id="departure" class="vigil-input" placeholder="KJFK" maxlength="4"
+                  autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+              </div>
+            </div>
+            <div class="field">
+              <label class="vigil-label" for="arrival">Arrival ICAO</label>
+              <div class="input-wrap">
+                <input type="text" id="arrival" class="vigil-input" placeholder="KDCA" maxlength="4"
+                  autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="field">
+              <label class="vigil-label" for="target_lat">Target Lat</label>
+              <div class="input-wrap">
+                <input type="number" id="target_lat" class="vigil-input" placeholder="40.0000"
+                  step="0.0001" min="-90" max="90">
+              </div>
+            </div>
+            <div class="field">
+              <label class="vigil-label" for="target_lon">Target Lon</label>
+              <div class="input-wrap">
+                <input type="number" id="target_lon" class="vigil-input" placeholder="-75.0000"
+                  step="0.0001" min="-180" max="180">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="field" id="field-radius">
+              <label class="vigil-label" id="label-radius" for="radius_nm">Radius</label>
+              <div class="input-wrap">
+                <input type="number" id="radius_nm" class="vigil-input has-unit" value="5.0" step="0.1" min="0.1">
+                <span class="input-unit">NM</span>
+              </div>
+            </div>
+            <div class="field" id="field-num-points">
+              <label class="vigil-label" id="label-num-points" for="num_points">Waypoints</label>
+              <div class="input-wrap">
+                <input type="number" id="num_points" class="vigil-input" value="8" step="1" min="3" max="64">
+              </div>
+            </div>
+          </div>
+
+          <div class="field" id="field-leg-length" hidden>
+            <label class="vigil-label" for="leg_length_nm">Leg Length</label>
+            <div class="input-wrap">
+              <input type="number" id="leg_length_nm" class="vigil-input has-unit" value="5.0" step="0.5" min="0.5">
+              <span class="input-unit">NM</span>
+            </div>
+          </div>
+
+          <div class="field" id="field-inbound-course" hidden>
+            <label class="vigil-label" id="label-inbound-course" for="inbound_course">Inbound Course</label>
+            <div class="input-wrap">
+              <input type="number" id="inbound_course" class="vigil-input has-unit" value="270" step="1" min="0" max="359">
+              <span class="input-unit">°</span>
+            </div>
+          </div>
+
+          <div class="field" id="field-sar-spacing" hidden>
+            <label class="vigil-label" id="label-sar-spacing" for="sar_spacing">Leg Spacing</label>
+            <div class="input-wrap">
+              <input type="number" id="sar_spacing" class="vigil-input has-unit" value="1.0" step="0.1" min="0.1">
+              <span class="input-unit">NM</span>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="field">
+              <label class="vigil-label" for="airspeed_kts">Airspeed <span class="opt-tag">OPT</span></label>
+              <div class="input-wrap">
+                <input type="number" id="airspeed_kts" class="vigil-input has-unit" placeholder="90" step="1" min="1">
+                <span class="input-unit">KTS</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="vigil-label" for="altitude_ft">Altitude <span class="opt-tag">OPT</span></label>
+              <div class="input-wrap">
+                <input type="number" id="altitude_ft" class="vigil-input has-unit" placeholder="3000" step="100" min="0">
+                <span class="input-unit">FT</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="form-error" class="error-msg" hidden></div>
+
+          <button type="submit" id="generate-btn" class="gen-btn">
+            <span>◈</span><span id="gen-label">GENERATE ORBIT</span>
+          </button>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Output Panel ── -->
+    <section class="panel panel-output" id="output-panel" hidden>
+      <div class="panel-hdr">
+        <span class="panel-hdr-icon">◈</span>
+        <span class="panel-hdr-title">Mission Output</span>
+      </div>
+      <div class="panel-body">
+
+        <div id="mission-summary" class="mission-summary"></div>
+        <div id="accuracy-badge" class="acc-badge"></div>
+
+        <div id="metrics-strip" class="metrics-strip" hidden></div>
+
+        <div id="compliance-section" class="compliance-section" hidden>
+          <div class="compliance-title">Profile Compliance</div>
+          <table class="compliance-table">
+            <thead>
+              <tr>
+                <th>Profile</th><th>Drift</th><th>Turn Rate</th><th>Altitude</th><th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="compliance-body"></tbody>
+          </table>
         </div>
-        <div style="font-size:0.6rem;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">SIGINT</div>
-        <div class="preset-row" style="margin-bottom:8px;">
-          <button type="button" class="preset-btn" data-pattern="racetrack">RACETRACK</button>
+
+        <hr class="sec-divider">
+
+        <div class="export-bar" role="tablist">
+          <button class="tab-btn active" role="tab" data-tab="skyvector">SKYVECTOR</button>
+          <button class="tab-btn" role="tab" data-tab="simbrief">SIMBRIEF</button>
+          <button class="tab-btn" role="tab" data-tab="plaintext">PLAIN TEXT</button>
+          <button class="tab-btn" role="tab" data-tab="arcbrief">ARC BRIEF</button>
         </div>
-        <div style="font-size:0.6rem;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">SAR</div>
-        <div class="preset-row">
-          <button type="button" class="preset-btn" data-pattern="expsquare">EXP SQ</button>
-          <button type="button" class="preset-btn" data-pattern="sector">SECTOR</button>
-          <button type="button" class="preset-btn" data-pattern="partrack">PAR TRACK</button>
+
+        <div class="export-wrap">
+          <div id="tab-skyvector" class="tab-content active">
+            <textarea id="out-skyvector" class="vigil-output" readonly spellcheck="false"></textarea>
+          </div>
+          <div id="tab-simbrief" class="tab-content">
+            <textarea id="out-simbrief" class="vigil-output" readonly spellcheck="false"></textarea>
+          </div>
+          <div id="tab-plaintext" class="tab-content">
+            <textarea id="out-plaintext" class="vigil-output" readonly spellcheck="false"></textarea>
+          </div>
+          <div id="tab-arcbrief" class="tab-content">
+            <textarea id="out-arcbrief" class="vigil-output" readonly spellcheck="false"></textarea>
+          </div>
+
+          <div class="output-meta">
+            <span id="waypoint-count" class="wp-count"></span>
+            <button id="copy-btn" class="copy-btn" type="button">
+              <span>⧉</span><span id="copy-label">COPY TO CLIPBOARD</span>
+            </button>
+          </div>
         </div>
-      </div>
-      <div>
-        <span class="preset-label">Mission Profile</span>
-        <div class="preset-row" id="preset-row">
-          <button type="button" class="preset-btn" data-radius="0.8"  data-points="16">INCIDENT</button>
-          <button type="button" class="preset-btn" data-radius="1.5"  data-points="12">SEARCH</button>
-          <button type="button" class="preset-btn" data-radius="3.0"  data-points="8">ISR</button>
-          <button type="button" class="preset-btn" data-radius="12.0" data-points="8">SURVEY</button>
-          <button type="button" class="preset-btn" data-radius="2.5"  data-points="12">CIRCLING</button>
-          <button type="button" class="preset-btn" data-points="36">ARC</button>
-        </div>
-      </div>
-      <div class="field" id="field-dir-toggle">
-        <label for="dir-toggle">Orbit Direction</label>
-        <button type="button" id="dir-toggle" style="display:block;width:100%;min-height:44px;background-color:#0a0a0a;color:#e0e0e0;border:1px solid #2a2a2a;border-radius:4px;padding:10px 12px;font-family:'Courier New',monospace;font-size:1rem;text-align:left;letter-spacing:0;text-transform:none;">CW — Clockwise</button>
-      </div>
-      <div class="field">
-        <label for="departure">Departure ICAO</label>
-        <input type="text" id="departure" placeholder="KJFK" maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-      </div>
-      <div class="field">
-        <label for="arrival">Arrival ICAO</label>
-        <input type="text" id="arrival" placeholder="KDCA" maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-      </div>
-      <div class="field">
-        <label for="target_lat">Target Latitude</label>
-        <input type="number" id="target_lat" placeholder="40.0000" step="0.0001" min="-90" max="90">
-      </div>
-      <div class="field">
-        <label for="target_lon">Target Longitude</label>
-        <input type="number" id="target_lon" placeholder="-75.0000" step="0.0001" min="-180" max="180">
-      </div>
-      <div class="field" id="field-radius">
-        <label id="label-radius" for="radius_nm">Radius (NM)</label>
-        <input type="number" id="radius_nm" value="5.0" step="0.1" min="0.1">
-      </div>
-      <div class="field" id="field-num-points">
-        <label id="label-num-points" for="num_points">Waypoints</label>
-        <input type="number" id="num_points" value="8" step="1" min="3" max="64">
-      </div>
-      <div class="field" id="field-leg-length" hidden>
-        <label for="leg_length_nm">Leg Length (NM)</label>
-        <input type="number" id="leg_length_nm" value="5.0" step="0.5" min="0.5">
-      </div>
-      <div class="field" id="field-inbound-course" hidden>
-        <label id="label-inbound-course" for="inbound_course">Inbound Course (°) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— also Figure-8 axis</span></label>
-        <input type="number" id="inbound_course" value="270" step="1" min="0" max="359">
-      </div>
-      <div class="field" id="field-sar-spacing" hidden>
-        <label id="label-sar-spacing" for="sar_spacing">Leg Spacing (NM)</label>
-        <input type="number" id="sar_spacing" value="1.0" step="0.1" min="0.1">
-      </div>
-      <div class="field">
-        <label for="airspeed_kts">Airspeed (kts) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— optional</span></label>
-        <input type="number" id="airspeed_kts" placeholder="90" step="1" min="1">
-      </div>
-      <div class="field">
-        <label for="altitude_ft">Altitude (ft MSL) <span style="color:#555;font-size:0.65rem;letter-spacing:0;">— optional</span></label>
-        <input type="number" id="altitude_ft" placeholder="3000" step="100" min="0">
-      </div>
-      <div id="form-error" class="error-msg" hidden></div>
-      <button type="submit" id="generate-btn">Generate Orbit</button>
-    </form>
-  </section>
 
-  <section class="panel" id="output-panel" hidden>
-    <h2>Mission Output</h2>
-    <div id="mission-summary" class="summary"></div>
-    <div id="accuracy-badge" class="badge"></div>
+      </div>
+    </section>
 
-    <div id="metrics-strip" class="metrics-strip" hidden></div>
-
-    <div id="compliance-section" class="compliance-section" hidden>
-      <div class="compliance-title">Profile Compliance</div>
-      <table class="compliance-table">
-        <thead>
-          <tr>
-            <th>Profile</th>
-            <th>Drift</th>
-            <th>Turn Rate</th>
-            <th>Altitude</th>
-            <th>Result</th>
-          </tr>
-        </thead>
-        <tbody id="compliance-body"></tbody>
-      </table>
-    </div>
-
-    <div class="tabs" role="tablist">
-      <button class="tab-btn active" role="tab" data-tab="skyvector">SkyVector</button>
-      <button class="tab-btn" role="tab" data-tab="simbrief">SimBrief</button>
-      <button class="tab-btn" role="tab" data-tab="plaintext">Plain Text</button>
-      <button class="tab-btn" role="tab" data-tab="arcbrief">Arc Brief</button>
-    </div>
-
-    <div id="tab-skyvector" class="tab-content">
-      <textarea id="out-skyvector" class="output-area" readonly spellcheck="false"></textarea>
-    </div>
-    <div id="tab-simbrief" class="tab-content" hidden>
-      <textarea id="out-simbrief" class="output-area" readonly spellcheck="false"></textarea>
-    </div>
-    <div id="tab-plaintext" class="tab-content" hidden>
-      <textarea id="out-plaintext" class="output-area" readonly spellcheck="false"></textarea>
-    </div>
-    <div id="tab-arcbrief" class="tab-content" hidden>
-      <textarea id="out-arcbrief" class="output-area" readonly spellcheck="false"></textarea>
-    </div>
-
-    <div class="output-footer">
-      <span id="waypoint-count" class="count"></span>
-      <button id="copy-btn" type="button">Copy to Clipboard</button>
-    </div>
-    <div id="copy-msg" class="copy-msg" hidden>Copied.</div>
-  </section>
-</main>
+  </div><!-- .main-cols -->
+</div><!-- .page-body -->
 
 <script>
 (function () {
   'use strict';
 
-  // --- Mission profile definitions (from orbit_detector_sbs) ---
+  // ── Mission profile definitions ──
   var PROFILES = {
     INCIDENT: { driftCapNm: 0.8,  minTurnDps: 3.5, altMin: 200,  altMax: 5000 },
-    SEARCH:   { driftCapNm: 1.5,  minTurnDps: null,altMin: null, altMax: null  },
-    ISR:      { driftCapNm: 3.0,  minTurnDps: 0.6, altMin: 1500, altMax: null  },
-    SURVEY:   { driftCapNm: 12.0, minTurnDps: null,altMin: null, altMax: null  },
-    CIRCLING: { driftCapNm: 1.35, minTurnDps: null,altMin: null, altMax: null  },
+    SEARCH:   { driftCapNm: 1.5,  minTurnDps: null, altMin: null, altMax: null },
+    ISR:      { driftCapNm: 3.0,  minTurnDps: 0.6,  altMin: 1500, altMax: null },
+    SURVEY:   { driftCapNm: 12.0, minTurnDps: null, altMin: null, altMax: null },
+    CIRCLING: { driftCapNm: 1.35, minTurnDps: null, altMin: null, altMax: null },
   };
 
-  // --- Orbital performance metrics ---
   function computeOrbitalMetrics(radiusNm, airspeedKts) {
     if (!airspeedKts || airspeedKts <= 0) return null;
     var circumferenceFt = 2 * Math.PI * radiusNm * 6076.115;
@@ -444,56 +853,44 @@
     };
   }
 
-  // --- Profile compliance check ---
-  // Returns per-profile result: { drift, turnRate, altitude, pass }
-  // Each field: true=pass, false=fail, null=unknown (data not provided)
   function checkCompliance(radiusNm, airspeedKts, altFt) {
-    var metrics = computeOrbitalMetrics(radiusNm, airspeedKts);
+    var metrics  = computeOrbitalMetrics(radiusNm, airspeedKts);
     var turnRate = metrics ? parseFloat(metrics.turnRateDps) : null;
     var hasAlt   = altFt !== null && !isNaN(altFt);
     var result   = {};
-
     for (var name in PROFILES) {
-      var p = PROFILES[name];
-      var drift    = radiusNm <= p.driftCapNm;
-      var turn     = p.minTurnDps === null ? null
-                   : (turnRate !== null ? turnRate >= p.minTurnDps : null);
-      var alt      = (p.altMin === null && p.altMax === null) ? null
-                   : !hasAlt ? null
-                   : (p.altMin !== null && altFt < p.altMin) ? false
-                   : (p.altMax !== null && altFt > p.altMax) ? false
-                   : true;
-
-      // Overall pass: drift must pass; turn/alt pass if data available, else ignored
-      var pass = drift
-        && (turn  === null || turn  === true)
-        && (alt   === null || alt   === true);
-
+      var p     = PROFILES[name];
+      var drift = radiusNm <= p.driftCapNm;
+      var turn  = p.minTurnDps === null ? null
+                : (turnRate !== null ? turnRate >= p.minTurnDps : null);
+      var alt   = (p.altMin === null && p.altMax === null) ? null
+                : !hasAlt ? null
+                : (p.altMin !== null && altFt < p.altMin) ? false
+                : (p.altMax !== null && altFt > p.altMax) ? false
+                : true;
+      var pass  = drift && (turn === null || turn === true) && (alt === null || alt === true);
       result[name] = { drift: drift, turnRate: turn, altitude: alt, pass: pass };
     }
     return result;
   }
 
-  // --- Render compliance table and metrics strip ---
   function renderCompliance(radiusNm, airspeedKts, altFt) {
-    var metricsEl    = document.getElementById('metrics-strip');
-    var compSection  = document.getElementById('compliance-section');
-    var tbody        = document.getElementById('compliance-body');
-    var metrics      = computeOrbitalMetrics(radiusNm, airspeedKts);
-    var compliance   = checkCompliance(radiusNm, airspeedKts, altFt);
+    var metricsEl   = document.getElementById('metrics-strip');
+    var compSection = document.getElementById('compliance-section');
+    var tbody       = document.getElementById('compliance-body');
+    var metrics     = computeOrbitalMetrics(radiusNm, airspeedKts);
+    var compliance  = checkCompliance(radiusNm, airspeedKts, altFt);
 
-    // Metrics strip
     if (metrics) {
       metricsEl.innerHTML =
-        '<div class="metric-chip">Period: <span>' + metrics.periodMin + ' min</span></div>' +
-        '<div class="metric-chip">Turn Rate: <span>' + metrics.turnRateDps + ' °/s</span></div>';
+        '<div class="metric-chip">Period: <span class="mv">' + metrics.periodMin + ' min</span></div>' +
+        '<div class="metric-chip">Turn Rate: <span class="mv">' + metrics.turnRateDps + ' °/s</span></div>';
       metricsEl.hidden = false;
     } else {
       metricsEl.innerHTML = '';
       metricsEl.hidden = true;
     }
 
-    // Compliance table
     function chk(val, pass, fail) {
       if (val === null) return '<span class="chk-unkn">—</span>';
       return val ? '<span class="chk-pass">' + pass + '</span>'
@@ -508,18 +905,15 @@
       row.innerHTML =
         '<td>' + name + '</td>' +
         '<td>' + chk(c.drift, '✓ ≤' + p.driftCapNm, '✗ >' + p.driftCapNm) + '</td>' +
-        '<td>' + chk(c.turnRate,
-          '✓ ≥' + p.minTurnDps + '°/s',
-          '✗ &lt;' + p.minTurnDps + '°/s') + '</td>' +
+        '<td>' + chk(c.turnRate, '✓ ≥' + p.minTurnDps + '°/s', '✗ &lt;' + p.minTurnDps + '°/s') + '</td>' +
         '<td>' + chk(c.altitude, '✓', '✗') + '</td>' +
-        '<td class="' + (c.pass ? 'result-pass' : 'result-fail') + '">' +
-          (c.pass ? 'PASS' : 'FAIL') + '</td>';
+        '<td class="' + (c.pass ? 'result-pass' : 'result-fail') + '">' + (c.pass ? 'PASS' : 'FAIL') + '</td>';
       tbody.appendChild(row);
     }
     compSection.hidden = false;
   }
 
-  // --- Core math (direct port of the Python) ---
+  // ── Core math (preserved) ──
   function generateOrbit(centerLat, centerLon, radiusNm, numPoints) {
     var NM_TO_DEG_LAT = 1 / 60;
     var NM_PER_DEG_LON = 60;
@@ -534,130 +928,75 @@
     return waypoints;
   }
 
-  // --- Destination point: lat/lon given origin, bearing (deg, aviation convention), distance (NM) ---
   function destinationPoint(lat, lon, bearingDeg, distNm) {
     var NM_TO_DEG_LAT = 1 / 60;
     var lonComp = Math.cos(lat * Math.PI / 180);
-    var brRad = bearingDeg * Math.PI / 180;
+    var brRad   = bearingDeg * Math.PI / 180;
     return [
       lat + distNm * Math.cos(brRad) * NM_TO_DEG_LAT,
       lon + distNm * Math.sin(brRad) / (60 * lonComp)
     ];
   }
 
-  // --- Racetrack generator ---
-  // courseDeg: heading of the outbound leg (aircraft flies this heading away from fix)
-  // The fix (reference point) is at nearEnd (courseDeg + 180° side from center)
-  // Racetrack center = midpoint of the two parallel straight legs
-  // direction: 'CW' = right-hand turns (standard holding), 'CCW' = left-hand
   function generateRacetrack(centerLat, centerLon, radiusNm, legLengthNm, courseDeg, numSemiPts, direction) {
-    var halfLeg  = legLengthNm / 2;
+    var halfLeg   = legLengthNm / 2;
     var oppCourse = (courseDeg + 180) % 360;
-
-    // End points on the straight-leg axis
-    var farEnd  = destinationPoint(centerLat, centerLon, courseDeg,  halfLeg);
-    var nearEnd = destinationPoint(centerLat, centerLon, oppCourse, halfLeg);
-
-    // Perpendicular offset direction for turn centers
-    // CW = right turns: offset to the right of the outbound heading
-    var perpOffset = direction === 'CW'
-      ? (courseDeg + 90) % 360
-      : (courseDeg - 90 + 360) % 360;
-
+    var farEnd    = destinationPoint(centerLat, centerLon, courseDeg, halfLeg);
+    var nearEnd   = destinationPoint(centerLat, centerLon, oppCourse, halfLeg);
+    var perpOffset = direction === 'CW' ? (courseDeg + 90) % 360 : (courseDeg - 90 + 360) % 360;
     var farCenter  = destinationPoint(farEnd[0],  farEnd[1],  perpOffset, radiusNm);
     var nearCenter = destinationPoint(nearEnd[0], nearEnd[1], perpOffset, radiusNm);
-
-    // For an arc point: position on circle = center + radiusNm at bearing `b`
-    function arcPt(cx, cy, b) {
-      return destinationPoint(cx, cy, b, radiusNm);
-    }
-
-    var waypoints = [];
-
-    // At farEnd: turn center is at farCenter (to the right of outbound).
-    // Aircraft arrives from nearEnd going courseDeg. Relative to farCenter,
-    // the aircraft is at bearing (oppCourse + 90) for CW, or different for CCW.
-    // Bearing FROM farCenter TO aircraft at arc entry:
-    //   CW:  aircraft is on the side opposite to perpOffset from farCenter, i.e. oppCourse
-    //   CCW: opposite side
+    function arcPt(cx, cy, b) { return destinationPoint(cx, cy, b, radiusNm); }
+    var waypoints    = [];
     var farArcEntry  = direction === 'CW' ? oppCourse : courseDeg;
     var nearArcEntry = direction === 'CW' ? courseDeg : oppCourse;
-
-    // Arc sweep: 180°, CW = clockwise = increasing bearing; CCW = decreasing
-    var sweepSign = direction === 'CW' ? 1 : -1;
-    var stepAngle = 180 / numSemiPts;
-
-    // Outbound leg: from nearEnd to farEnd (heading = courseDeg)
-    // We emit only the turn waypoints + the transition points; straight legs are defined
-    // by the arc endpoints. Emit: farEnd arc, then nearEnd arc; waypoints trace full loop.
-
-    // Far turn arc (numSemiPts + 1 points including start and end)
+    var sweepSign    = direction === 'CW' ? 1 : -1;
+    var stepAngle    = 180 / numSemiPts;
     for (var i = 0; i <= numSemiPts; i++) {
-      var b = (farArcEntry + sweepSign * i * stepAngle + 360) % 360;
+      var b  = (farArcEntry + sweepSign * i * stepAngle + 360) % 360;
       var pt = arcPt(farCenter[0], farCenter[1], b);
       waypoints.push([parseFloat(pt[0].toFixed(6)), parseFloat(pt[1].toFixed(6))]);
     }
-
-    // Near turn arc
     for (var j = 0; j <= numSemiPts; j++) {
-      var b2 = (nearArcEntry + sweepSign * j * stepAngle + 360) % 360;
+      var b2  = (nearArcEntry + sweepSign * j * stepAngle + 360) % 360;
       var pt2 = arcPt(nearCenter[0], nearCenter[1], b2);
       waypoints.push([parseFloat(pt2[0].toFixed(6)), parseFloat(pt2[1].toFixed(6))]);
     }
-
     return waypoints;
   }
 
-  // --- Figure-8 generator ---
-  // Two equal-radius lobes tangent at centerLat/centerLon.
-  // axisDeg: bearing along which lobe centers are offset from center.
-  // Lobe 1 (CW) center: center + radiusNm along axisDeg
-  // Lobe 2 (CCW) center: center + radiusNm along axisDeg + 180
-  // Both lobes start/end at the center crossing point.
   function generateFigureEight(centerLat, centerLon, radiusNm, axisDeg, numPointsPerLobe) {
     var lobe1Center = destinationPoint(centerLat, centerLon, axisDeg, radiusNm);
     var lobe2Center = destinationPoint(centerLat, centerLon, (axisDeg + 180) % 360, radiusNm);
-
-    var waypoints = [];
-
-    // Lobe 1: CW. Center is at lobe1Center.
-    // Center crossing point is at bearing (axisDeg + 180) from lobe1Center.
-    // Aircraft flies CW → bearing increases.
-    var lobe1Start = (axisDeg + 180) % 360;
+    var waypoints   = [];
+    var lobe1Start  = (axisDeg + 180) % 360;
     for (var i = 0; i < numPointsPerLobe; i++) {
-      var b = (lobe1Start + i * (360 / numPointsPerLobe)) % 360;
-      var brRad = b * Math.PI / 180;
-      var lonComp1 = Math.cos(lobe1Center[0] * Math.PI / 180);
+      var b      = (lobe1Start + i * (360 / numPointsPerLobe)) % 360;
+      var brRad  = b * Math.PI / 180;
+      var lc1    = Math.cos(lobe1Center[0] * Math.PI / 180);
       waypoints.push([
         parseFloat((lobe1Center[0] + radiusNm * Math.cos(brRad) / 60).toFixed(6)),
-        parseFloat((lobe1Center[1] + radiusNm * Math.sin(brRad) / (60 * lonComp1)).toFixed(6))
+        parseFloat((lobe1Center[1] + radiusNm * Math.sin(brRad) / (60 * lc1)).toFixed(6))
       ]);
     }
-
-    // Lobe 2: CCW. Center is at lobe2Center.
-    // Center crossing point is at bearing axisDeg from lobe2Center.
-    // Aircraft flies CCW → bearing decreases.
     var lobe2Start = axisDeg % 360;
     for (var j = 0; j < numPointsPerLobe; j++) {
-      var b2 = (lobe2Start - j * (360 / numPointsPerLobe) + 360) % 360;
+      var b2     = (lobe2Start - j * (360 / numPointsPerLobe) + 360) % 360;
       var brRad2 = b2 * Math.PI / 180;
-      var lonComp2 = Math.cos(lobe2Center[0] * Math.PI / 180);
+      var lc2    = Math.cos(lobe2Center[0] * Math.PI / 180);
       waypoints.push([
         parseFloat((lobe2Center[0] + radiusNm * Math.cos(brRad2) / 60).toFixed(6)),
-        parseFloat((lobe2Center[1] + radiusNm * Math.sin(brRad2) / (60 * lonComp2)).toFixed(6))
+        parseFloat((lobe2Center[1] + radiusNm * Math.sin(brRad2) / (60 * lc2)).toFixed(6))
       ]);
     }
-
     return waypoints;
   }
 
-  // --- SAR: Expanding Square (IAMSAR) ---
-  // Starts at datum, each pair of legs increases length by one leg spacing (CW right turns)
   function generateExpandingSquare(centerLat, centerLon, legSpacingNm, initialHeadingDeg, numLegs) {
-    var wps = [[parseFloat(centerLat.toFixed(6)), parseFloat(centerLon.toFixed(6))]];
-    var curLat = centerLat, curLon = centerLon;
+    var wps     = [[parseFloat(centerLat.toFixed(6)), parseFloat(centerLon.toFixed(6))]];
+    var curLat  = centerLat, curLon = centerLon;
     var heading = initialHeadingDeg;
-    var legDist  = legSpacingNm;
+    var legDist = legSpacingNm;
     for (var i = 0; i < numLegs; i++) {
       var next = destinationPoint(curLat, curLon, heading, legDist);
       wps.push([parseFloat(next[0].toFixed(6)), parseFloat(next[1].toFixed(6))]);
@@ -668,27 +1007,23 @@
     return wps;
   }
 
-  // --- SAR: Sector Search ---
-  // Radial legs from center to search radius, returning to datum between sectors
   function generateSectorSearch(centerLat, centerLon, searchRadiusNm, numSectors, initialBearingDeg) {
-    var wps = [];
+    var wps         = [];
     var sectorAngle = 360 / numSectors;
     for (var i = 0; i < numSectors; i++) {
       var bearing = (initialBearingDeg + i * sectorAngle) % 360;
-      var tip = destinationPoint(centerLat, centerLon, bearing, searchRadiusNm);
+      var tip     = destinationPoint(centerLat, centerLon, bearing, searchRadiusNm);
       wps.push([parseFloat(tip[0].toFixed(6)), parseFloat(tip[1].toFixed(6))]);
       wps.push([parseFloat(centerLat.toFixed(6)), parseFloat(centerLon.toFixed(6))]);
     }
     return wps;
   }
 
-  // --- SAR: Parallel Track (Creeping Line Ahead) ---
-  // Connected S-pattern: even legs fly trackHeading, odd legs fly opposite; offset right between tracks
   function generateParallelTrack(startLat, startLon, trackHeadingDeg, legLengthNm, trackSpacingNm, numLegs) {
-    var wps = [];
+    var wps           = [];
     var perpRight     = (trackHeadingDeg + 90) % 360;
     var returnHeading = (trackHeadingDeg + 180) % 360;
-    var curLat = startLat, curLon = startLon;
+    var curLat        = startLat, curLon = startLon;
     for (var i = 0; i < numLegs; i++) {
       wps.push([parseFloat(curLat.toFixed(6)), parseFloat(curLon.toFixed(6))]);
       var hdg      = i % 2 === 0 ? trackHeadingDeg : returnHeading;
@@ -714,7 +1049,6 @@
     }).join('\n');
   }
 
-  // SimBrief route format: space-separated DDMMSSxDDDMMSSx (ICAO user waypoint format)
   function toSimBriefWpt(lat, lon) {
     function dms(deg, isLon) {
       var sign  = deg >= 0;
@@ -745,9 +1079,6 @@
     }).join('\n');
   }
 
-  // --- Arc Brief format (Turn N / Twist N) ---
-  // bearing = bearing FROM target TO aircraft (the "radial" equivalent)
-  // heading = intercept heading pilot should fly (perpendicular to bearing)
   function formatArcBrief(waypoints, radiusNm, numPoints, direction) {
     var degPerSeg = 360 / numPoints;
     var turnTwist = Math.round(degPerSeg);
@@ -772,162 +1103,367 @@
       var lon = (wp[1] >= 0 ? '+' : '') + wp[1].toFixed(6);
       lines.push(
         String(i + 1).padStart(2, '0') + '   ' +
-        String(Math.round(bearing)).padStart(3, '0') + '\u00b0     ' +
-        String(Math.round(heading)).padStart(3, '0') + '\u00b0   ' +
+        String(Math.round(bearing)).padStart(3, '0') + '°     ' +
+        String(Math.round(heading)).padStart(3, '0') + '°   ' +
         lat + '   ' + lon
       );
     }
     return lines.join('\n');
   }
 
-  // --- Racetrack / Figure-8 / SAR pattern brief ---
   function formatPatternBrief(waypoints, patType, radiusNm, legLengthNm, courseDeg, numSemiPts, direction, axisDeg, sarSpacingNm) {
     var lines = [];
     if (patType === 'racetrack') {
       var dirLabel = direction === 'CCW' ? 'COUNTERCLOCKWISE' : 'CLOCKWISE';
-      lines.push('RACETRACK BRIEF \u2014 ' + radiusNm + ' NM TURNS | ' + legLengthNm + ' NM LEGS | ' + dirLabel);
-      lines.push('OUTBOUND COURSE: ' + String(Math.round(courseDeg)).padStart(3, '0') + '\u00b0  INBOUND: ' + String(Math.round((courseDeg + 180) % 360)).padStart(3, '0') + '\u00b0');
-      lines.push('');
-      lines.push('WP   TYPE    LAT           LON');
-      var totalPts = waypoints.length;
+      lines.push('RACETRACK BRIEF — ' + radiusNm + ' NM TURNS | ' + legLengthNm + ' NM LEGS | ' + dirLabel);
+      lines.push('OUTBOUND COURSE: ' + String(Math.round(courseDeg)).padStart(3, '0') + '°  INBOUND: ' + String(Math.round((courseDeg + 180) % 360)).padStart(3, '0') + '°');
+      lines.push(''); lines.push('WP   TYPE    LAT           LON');
       var semiSize = numSemiPts + 1;
-      for (var i = 0; i < totalPts; i++) {
-        var wp = waypoints[i];
+      for (var i = 0; i < waypoints.length; i++) {
+        var wp  = waypoints[i];
         var lat = (wp[0] >= 0 ? '+' : '') + wp[0].toFixed(6);
         var lon = (wp[1] >= 0 ? '+' : '') + wp[1].toFixed(6);
-        var segType;
-        if (i < semiSize) {
-          segType = 'TURN-1';
-        } else {
-          segType = 'TURN-2';
-        }
-        lines.push(String(i + 1).padStart(2, '0') + '   ' + segType + '  ' + lat + '   ' + lon);
+        lines.push(String(i + 1).padStart(2, '0') + '   ' + (i < semiSize ? 'TURN-1' : 'TURN-2') + '  ' + lat + '   ' + lon);
       }
     } else if (patType === 'figureeight') {
-      lines.push('FIGURE-8 BRIEF \u2014 ' + radiusNm + ' NM LOBES | AXIS: ' + String(Math.round(axisDeg)).padStart(3, '0') + '\u00b0/' + String(Math.round((axisDeg + 180) % 360)).padStart(3, '0') + '\u00b0');
-      lines.push('LOBE 1 (CW) \u2014 LOBE 2 (CCW)');
-      lines.push('');
-      lines.push('WP   LOBE  LAT           LON');
+      lines.push('FIGURE-8 BRIEF — ' + radiusNm + ' NM LOBES | AXIS: ' + String(Math.round(axisDeg)).padStart(3, '0') + '°/' + String(Math.round((axisDeg + 180) % 360)).padStart(3, '0') + '°');
+      lines.push('LOBE 1 (CW) — LOBE 2 (CCW)'); lines.push(''); lines.push('WP   LOBE  LAT           LON');
       var halfLen = Math.floor(waypoints.length / 2);
       for (var k = 0; k < waypoints.length; k++) {
-        var wp2 = waypoints[k];
+        var wp2  = waypoints[k];
         var lat2 = (wp2[0] >= 0 ? '+' : '') + wp2[0].toFixed(6);
         var lon2 = (wp2[1] >= 0 ? '+' : '') + wp2[1].toFixed(6);
-        var lobe = k < halfLen ? '1-CW' : '2-CCW';
-        lines.push(String(k + 1).padStart(2, '0') + '   ' + lobe + '  ' + lat2 + '   ' + lon2);
+        lines.push(String(k + 1).padStart(2, '0') + '   ' + (k < halfLen ? '1-CW' : '2-CCW') + '  ' + lat2 + '   ' + lon2);
       }
     } else if (patType === 'expsquare') {
-      lines.push('SAR BRIEF \u2014 EXPANDING SQUARE');
+      lines.push('SAR BRIEF — EXPANDING SQUARE');
       lines.push('DATUM: ' + waypoints[0][0].toFixed(6) + ', ' + waypoints[0][1].toFixed(6));
-      lines.push('INITIAL HEADING: ' + String(Math.round(courseDeg)).padStart(3, '0') + '\u00b0  |  LEG SPACING: ' + sarSpacingNm + ' NM');
-      lines.push('');
-      lines.push('WP   LEG LENGTH  LAT           LON');
-      var spacing = sarSpacingNm;
-      var legDist = spacing;
-      var legCount = 0;
+      lines.push('INITIAL HEADING: ' + String(Math.round(courseDeg)).padStart(3, '0') + '°  |  LEG SPACING: ' + sarSpacingNm + ' NM');
+      lines.push(''); lines.push('WP   LEG LENGTH  LAT           LON');
+      var spacing = sarSpacingNm, legDist = spacing, legCount = 0;
       for (var e = 0; e < waypoints.length; e++) {
-        var wpe = waypoints[e];
+        var wpe  = waypoints[e];
         var late = (wpe[0] >= 0 ? '+' : '') + wpe[0].toFixed(6);
         var lone = (wpe[1] >= 0 ? '+' : '') + wpe[1].toFixed(6);
         var legStr = e === 0 ? 'DATUM   ' : (legDist.toFixed(1) + ' NM  ');
-        if (e > 0) {
-          legCount++;
-          if (legCount % 2 === 0) legDist += spacing;
-        }
+        if (e > 0) { legCount++; if (legCount % 2 === 0) legDist += spacing; }
         lines.push(String(e + 1).padStart(2, '0') + '   ' + legStr + '  ' + late + '   ' + lone);
       }
     } else if (patType === 'sector') {
       var sectorAngle = 360 / numSemiPts;
-      lines.push('SAR BRIEF \u2014 SECTOR SEARCH');
+      lines.push('SAR BRIEF — SECTOR SEARCH');
       lines.push('CENTER: ' + waypoints[1][0].toFixed(6) + ', ' + waypoints[1][1].toFixed(6));
-      lines.push('SEARCH RADIUS: ' + radiusNm + ' NM  |  ' + numSemiPts + ' SECTORS @ ' + sectorAngle.toFixed(0) + '\u00b0');
-      lines.push('');
-      lines.push('WP   TYPE    BRG   LAT           LON');
+      lines.push('SEARCH RADIUS: ' + radiusNm + ' NM  |  ' + numSemiPts + ' SECTORS @ ' + sectorAngle.toFixed(0) + '°');
+      lines.push(''); lines.push('WP   TYPE    BRG   LAT           LON');
       for (var s = 0; s < waypoints.length; s++) {
         var wps2 = waypoints[s];
         var lats = (wps2[0] >= 0 ? '+' : '') + wps2[0].toFixed(6);
         var lons = (wps2[1] >= 0 ? '+' : '') + wps2[1].toFixed(6);
         var sType, sBrg;
         if (s % 2 === 0) {
-          var sectorIdx = Math.floor(s / 2);
-          sBrg = String(Math.round((courseDeg + sectorIdx * sectorAngle) % 360)).padStart(3, '0') + '\u00b0';
+          sBrg  = String(Math.round((courseDeg + Math.floor(s / 2) * sectorAngle) % 360)).padStart(3, '0') + '°';
           sType = 'TIP ';
-        } else {
-          sType = 'DATM';
-          sBrg  = '   ';
-        }
+        } else { sType = 'DATM'; sBrg = '   '; }
         lines.push(String(s + 1).padStart(2, '0') + '   ' + sType + '    ' + sBrg + '   ' + lats + '   ' + lons);
       }
     } else if (patType === 'partrack') {
-      lines.push('SAR BRIEF \u2014 PARALLEL TRACK (CREEPING LINE)');
-      lines.push('TRACK HEADING: ' + String(Math.round(courseDeg)).padStart(3, '0') + '\u00b0  |  LEG LENGTH: ' + legLengthNm + ' NM  |  SPACING: ' + sarSpacingNm + ' NM');
-      lines.push('');
-      lines.push('WP   TYPE     LAT           LON');
+      lines.push('SAR BRIEF — PARALLEL TRACK (CREEPING LINE)');
+      lines.push('TRACK HEADING: ' + String(Math.round(courseDeg)).padStart(3, '0') + '°  |  LEG LENGTH: ' + legLengthNm + ' NM  |  SPACING: ' + sarSpacingNm + ' NM');
+      lines.push(''); lines.push('WP   TYPE     LAT           LON');
       for (var t = 0; t < waypoints.length; t++) {
-        var wpt = waypoints[t];
+        var wpt  = waypoints[t];
         var latt = (wpt[0] >= 0 ? '+' : '') + wpt[0].toFixed(6);
         var lont = (wpt[1] >= 0 ? '+' : '') + wpt[1].toFixed(6);
-        var tType = t % 2 === 0 ? 'LEG-START' : 'LEG-END  ';
-        lines.push(String(t + 1).padStart(2, '0') + '   ' + tType + '  ' + latt + '   ' + lont);
+        lines.push(String(t + 1).padStart(2, '0') + '   ' + (t % 2 === 0 ? 'LEG-START' : 'LEG-END  ') + '  ' + latt + '   ' + lont);
       }
     }
     return lines.join('\n');
   }
 
-  // --- Pattern type state and field visibility ---
+  // ── State ──
   var patternType = 'circular';
+  var orbitDir    = 'CW';
 
+  // ── Canvas rendering ──
+  var canvas = document.getElementById('vigil-canvas');
+  var ctx    = canvas.getContext('2d');
+
+  function initCanvas() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    renderCanvas();
+  }
+
+  function getP() {
+    return {
+      radius:    parseFloat(document.getElementById('radius_nm').value)    || 5,
+      numPts:    parseInt(document.getElementById('num_points').value, 10) || 8,
+      legLen:    parseFloat(document.getElementById('leg_length_nm').value) || 5,
+      course:    parseFloat(document.getElementById('inbound_course').value) || 270,
+      sarSpace:  parseFloat(document.getElementById('sar_spacing').value)   || 1,
+    };
+  }
+
+  function drawGrid(w, h) {
+    ctx.strokeStyle = 'rgba(0,255,136,0.04)';
+    ctx.lineWidth   = 1;
+    for (var x = 0; x <= w; x += 40) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+    }
+    for (var y = 0; y <= h; y += 40) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+  }
+
+  function drawCrosshair(cx, cy) {
+    var s = 9;
+    ctx.strokeStyle = '#ffb700';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - s, cy); ctx.lineTo(cx + s, cy);
+    ctx.moveTo(cx, cy - s); ctx.lineTo(cx, cy + s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffb700';
+    ctx.fill();
+  }
+
+  function drawWP(x, y, idx) {
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#00ff88';
+    ctx.fill();
+    if (idx < 12) {
+      ctx.fillStyle   = 'rgba(0,255,136,0.65)';
+      ctx.font        = '9px Share Tech Mono,monospace';
+      ctx.textAlign   = 'left';
+      ctx.fillText('WP' + String(idx + 1).padStart(2, '0'), x + 5, y - 3);
+    }
+  }
+
+  function drawLabel(text) {
+    ctx.fillStyle = '#00ff88';
+    ctx.font      = '11px Share Tech Mono,monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(text, 12, canvas.height - 12);
+  }
+
+  function renderCanvas() {
+    var w = canvas.width, h = canvas.height;
+    if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#0a0c0f';
+    ctx.fillRect(0, 0, w, h);
+    drawGrid(w, h);
+
+    var cx = w / 2, cy = h / 2;
+    var margin = 44;
+    var avail  = Math.min(w, h) / 2 - margin;
+
+    // North indicator
+    ctx.fillStyle = '#8a9ab5';
+    ctx.font      = '11px Barlow,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('N↑', w - 10, 22);
+
+    drawCrosshair(cx, cy);
+
+    var p = getP();
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth   = 1.5;
+    ctx.setLineDash([]);
+
+    if (patternType === 'circular') {
+      var r = avail;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+      var n = Math.max(3, Math.min(p.numPts, 64));
+      for (var i = 0; i < n; i++) {
+        var a = (2 * Math.PI * i) / n;
+        drawWP(cx + r * Math.sin(a), cy - r * Math.cos(a), i);
+      }
+      drawLabel('CIRCULAR  r=' + p.radius + 'NM  n=' + n);
+
+    } else if (patternType === 'figureeight') {
+      var r8  = avail * 0.46;
+      var axR = (p.course - 90) * Math.PI / 180;
+      var c1x = cx + r8 * Math.cos(axR), c1y = cy + r8 * Math.sin(axR);
+      var c2x = cx - r8 * Math.cos(axR), c2y = cy - r8 * Math.sin(axR);
+      ctx.beginPath(); ctx.arc(c1x, c1y, r8, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(c2x, c2y, r8, 0, Math.PI * 2); ctx.stroke();
+      var n8 = Math.max(4, Math.min(p.numPts, 32));
+      for (var i8 = 0; i8 < n8; i8++) {
+        var a8 = (2 * Math.PI * i8) / n8;
+        drawWP(c1x + r8 * Math.cos(a8), c1y + r8 * Math.sin(a8), i8);
+      }
+      drawLabel('FIGURE-8  r=' + p.radius + 'NM  axis=' + p.course + '°');
+
+    } else if (patternType === 'racetrack') {
+      // axis direction in canvas coords (bearing p.course = inbound)
+      var inbR  = (p.course - 90) * Math.PI / 180;
+      var legPx = avail * 0.55;
+      var trnR  = avail * 0.35;
+      var dx = Math.cos(inbR), dy = Math.sin(inbR);
+      // turn direction offset (CW = right of outbound = left of inbound perp)
+      var side = orbitDir === 'CW' ? 1 : -1;
+      var px = -dy * side, py = dx * side; // perpendicular right of outbound
+      // far/near end of straight legs (centers of semicircle axes)
+      var fex = cx + dx * legPx, fey = cy + dy * legPx;
+      var nex = cx - dx * legPx, ney = cy - dy * legPx;
+      // offset straight-leg endpoints to turn side
+      var fr1x = fex, fr1y = fey;
+      var fr2x = fex + px * trnR * 2, fr2y = fey + py * trnR * 2;
+      var nr1x = nex, nr1y = ney;
+      var nr2x = nex + px * trnR * 2, nr2y = ney + py * trnR * 2;
+      // straight legs
+      ctx.beginPath();
+      ctx.moveTo(fr1x, fr1y); ctx.lineTo(fr2x, fr2y);
+      ctx.moveTo(nr1x, nr1y); ctx.lineTo(nr2x, nr2y);
+      ctx.stroke();
+      // far semicircle center
+      var fc1x = (fr1x + fr2x) / 2, fc1y = (fr1y + fr2y) / 2;
+      var nc1x = (nr1x + nr2x) / 2, nc1y = (nr1y + nr2y) / 2;
+      var fa1 = Math.atan2(fr1y - fc1y, fr1x - fc1x);
+      var na1 = Math.atan2(nr2y - nc1y, nr2x - nc1x);
+      var sweep = orbitDir === 'CW' ? Math.PI : -Math.PI;
+      ctx.beginPath(); ctx.arc(fc1x, fc1y, trnR, fa1, fa1 + sweep, orbitDir === 'CCW'); ctx.stroke();
+      ctx.beginPath(); ctx.arc(nc1x, nc1y, trnR, na1, na1 + sweep, orbitDir === 'CCW'); ctx.stroke();
+      drawWP(fr1x, fr1y, 0); drawWP(fr2x, fr2y, 1);
+      drawWP(nr2x, nr2y, 2); drawWP(nr1x, nr1y, 3);
+      drawLabel('RACETRACK  r=' + p.radius + 'NM  leg=' + p.legLen + 'NM');
+
+    } else if (patternType === 'expsquare') {
+      var step = avail / Math.max(4, p.numPts * 0.6 + 2);
+      var ex = cx, ey = cy;
+      var eHdg = (p.course - 90) * Math.PI / 180;
+      var eDirs = [0, Math.PI / 2, Math.PI, -Math.PI / 2];
+      var eDist = step;
+      ctx.beginPath(); ctx.moveTo(ex, ey);
+      var dIdx = 0;
+      var maxLegs = Math.min(p.numPts, 20);
+      for (var el = 0; el < maxLegs; el++) {
+        var eDir = eHdg + eDirs[dIdx % 4];
+        var nex2 = ex + Math.cos(eDir) * eDist;
+        var ney2 = ey + Math.sin(eDir) * eDist;
+        ctx.lineTo(nex2, ney2);
+        drawWP(nex2, ney2, el);
+        ex = nex2; ey = ney2;
+        dIdx++;
+        if (dIdx % 2 === 0) eDist += step;
+      }
+      ctx.stroke();
+      drawLabel('EXP SQUARE  legs=' + p.numPts + '  spc=' + p.sarSpace + 'NM');
+
+    } else if (patternType === 'sector') {
+      var ns  = Math.max(2, Math.min(p.numPts, 12));
+      var secR = avail * 0.78;
+      for (var si = 0; si < ns; si++) {
+        var sa = ((p.course + si * (360 / ns)) - 90) * Math.PI / 180;
+        var tx = cx + secR * Math.cos(sa), ty = cy + secR * Math.sin(sa);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(tx, ty); ctx.stroke();
+        drawWP(tx, ty, si);
+      }
+      drawLabel('SECTOR  r=' + p.radius + 'NM  n=' + ns);
+
+    } else if (patternType === 'partrack') {
+      var nl    = Math.max(1, Math.min(p.numPts, 10));
+      var hdR2  = (p.course - 90) * Math.PI / 180;
+      var legPx2 = avail * 0.72;
+      var spacePx = Math.min(avail * 0.18, (avail * 0.9) / Math.max(nl, 1));
+      var startOff = -(nl - 1) * spacePx / 2;
+      var perpR2  = hdR2 + Math.PI / 2;
+      var ptx = cx + Math.cos(perpR2) * startOff;
+      var pty = cy + Math.sin(perpR2) * startOff;
+      for (var ti = 0; ti < nl; ti++) {
+        var dir2 = ti % 2 === 0 ? hdR2 : hdR2 + Math.PI;
+        var ex3  = ptx + Math.cos(dir2) * legPx2;
+        var ey3  = pty + Math.sin(dir2) * legPx2;
+        ctx.beginPath(); ctx.moveTo(ptx, pty); ctx.lineTo(ex3, ey3); ctx.stroke();
+        drawWP(ptx, pty, ti * 2);
+        drawWP(ex3, ey3, ti * 2 + 1);
+        ptx += Math.cos(perpR2) * spacePx;
+        pty += Math.sin(perpR2) * spacePx;
+      }
+      drawLabel('PAR TRACK  legs=' + nl + '  spc=' + p.sarSpace + 'NM');
+
+    } else {
+      // placeholder
+      ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = 'rgba(74,85,104,0.5)';
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath(); ctx.arc(cx, cy, avail * 0.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle   = '#4a5568';
+      ctx.font        = '11px Share Tech Mono,monospace';
+      ctx.textAlign   = 'center';
+      ctx.fillText('AWAITING PARAMETERS', cx, cy);
+    }
+  }
+
+  window.addEventListener('resize', function () {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    renderCanvas();
+  });
+
+  setTimeout(initCanvas, 0);
+
+  ['radius_nm','num_points','leg_length_nm','inbound_course','sar_spacing','target_lat','target_lon'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', renderCanvas);
+  });
+
+  // ── Pattern field visibility ──
   function updatePatternFields() {
-    var p = patternType;
-    var isCircular    = p === 'circular';
-    var isRacetrack   = p === 'racetrack';
-    var isFigureEight = p === 'figureeight';
-    var isExpSquare   = p === 'expsquare';
-    var isSector      = p === 'sector';
-    var isParTrack    = p === 'partrack';
-    var isSAR         = isExpSquare || isSector || isParTrack;
-    var isOrbital     = isCircular || isFigureEight || isRacetrack;
+    var p            = patternType;
+    var isCircular   = p === 'circular';
+    var isRacetrack  = p === 'racetrack';
+    var isFigure8    = p === 'figureeight';
+    var isExpSquare  = p === 'expsquare';
+    var isSector     = p === 'sector';
+    var isParTrack   = p === 'partrack';
+    var isSAR        = isExpSquare || isSector || isParTrack;
 
-    // radius: hide for expsquare and partrack (they use leg-spacing instead)
-    document.getElementById('field-radius').hidden = isExpSquare || isParTrack;
+    document.getElementById('field-radius').hidden         = isExpSquare || isParTrack;
+    document.getElementById('field-leg-length').hidden     = !(isRacetrack || isParTrack);
+    document.getElementById('field-inbound-course').hidden = !(isRacetrack || isFigure8 || isSAR);
+    document.getElementById('field-sar-spacing').hidden    = !(isExpSquare || isParTrack);
+    document.getElementById('field-dir-toggle').hidden     = isFigure8 || isSAR;
 
     var radiusLabel = document.getElementById('label-radius');
-    if (radiusLabel) radiusLabel.textContent = isSector ? 'Search Radius (NM)' : 'Radius (NM)';
+    if (radiusLabel) radiusLabel.textContent = isSector ? 'Search Radius' : 'Radius';
 
-    document.getElementById('field-leg-length').hidden    = !(isRacetrack || isParTrack);
-    document.getElementById('field-inbound-course').hidden = !(isRacetrack || isFigureEight || isSAR);
-    document.getElementById('field-sar-spacing').hidden   = !(isExpSquare || isParTrack);
-    document.getElementById('field-dir-toggle').hidden    = isFigureEight || isSAR;
-
-    // Dynamic labels
     var numLabel = document.getElementById('label-num-points');
-    if (isRacetrack)    numLabel.textContent = 'Points per Turn';
-    else if (isSector)  numLabel.textContent = 'Num Sectors';
-    else if (isSAR)     numLabel.textContent = 'Num Legs';
-    else                numLabel.textContent = 'Waypoints';
+    if (isRacetrack)   numLabel.textContent = 'Points per Turn';
+    else if (isSector) numLabel.textContent = 'Num Sectors';
+    else if (isSAR)    numLabel.textContent = 'Num Legs';
+    else               numLabel.textContent = 'Waypoints';
 
     var courseLabel = document.getElementById('label-inbound-course');
     if (courseLabel) {
-      var courseSpan = '<span style="color:#555;font-size:0.65rem;letter-spacing:0;">— also Figure-8 axis</span>';
-      if (isFigureEight) courseLabel.innerHTML = 'Axis Course (°) ' + courseSpan;
-      else if (isExpSquare) courseLabel.textContent = 'Initial Heading (°)';
-      else if (isSector)    courseLabel.textContent = 'Initial Bearing (°)';
-      else if (isParTrack)  courseLabel.textContent = 'Track Heading (°)';
-      else                  courseLabel.innerHTML = 'Inbound Course (°) ' + courseSpan;
+      if (isFigure8)      courseLabel.textContent = 'Axis Course';
+      else if (isExpSquare) courseLabel.textContent = 'Initial Heading';
+      else if (isSector)    courseLabel.textContent = 'Initial Bearing';
+      else if (isParTrack)  courseLabel.textContent = 'Track Heading';
+      else                  courseLabel.textContent = 'Inbound Course';
     }
 
     var spacingLabel = document.getElementById('label-sar-spacing');
-    if (spacingLabel) spacingLabel.textContent = isParTrack ? 'Track Spacing (NM)' : 'Leg Spacing (NM)';
+    if (spacingLabel) spacingLabel.textContent = isParTrack ? 'Track Spacing' : 'Leg Spacing';
 
-    // Mission profile preset row: only interactive for ISR orbital
-    document.getElementById('preset-row').style.opacity = isCircular ? '' : '0.4';
-    document.getElementById('preset-row').style.pointerEvents = isCircular ? '' : 'none';
+    var presetRow = document.getElementById('preset-row');
+    presetRow.style.opacity       = isCircular ? '' : '0.4';
+    presetRow.style.pointerEvents = isCircular ? '' : 'none';
 
-    // Compliance section only relevant for orbital patterns
     var compSection = document.getElementById('compliance-section');
     if (compSection) compSection.hidden = isSAR;
+
+    renderCanvas();
   }
 
+  // Pattern buttons
   document.querySelectorAll('[data-pattern]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       patternType = btn.dataset.pattern;
@@ -938,39 +1474,41 @@
     });
   });
 
-  // --- Preset button wiring ---
-  var orbitDir = 'CW';
-
-  document.querySelectorAll('#preset-row .preset-btn').forEach(function (btn) {
+  // Profile buttons
+  document.querySelectorAll('#preset-row .profile-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       if (btn.dataset.radius) document.getElementById('radius_nm').value = btn.dataset.radius;
       document.getElementById('num_points').value = btn.dataset.points;
-      document.querySelectorAll('#preset-row .preset-btn').forEach(function (b) {
-        b.classList.remove('active');
-      });
+      document.querySelectorAll('#preset-row .profile-btn').forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
+      renderCanvas();
     });
   });
 
-  // --- Direction toggle ---
-  var dirToggle = document.getElementById('dir-toggle');
-  dirToggle.addEventListener('click', function () {
-    orbitDir = orbitDir === 'CW' ? 'CCW' : 'CW';
-    dirToggle.textContent = orbitDir === 'CW' ? 'CW \u2014 Clockwise' : 'CCW \u2014 Counterclockwise';
-    dirToggle.style.borderColor = orbitDir === 'CCW' ? '#00ff88' : '#2a2a2a';
-    dirToggle.style.color       = orbitDir === 'CCW' ? '#00ff88' : '#e0e0e0';
-  });
+  // Direction toggle
+  var dirCCW = document.getElementById('dir-ccw');
+  var dirCW  = document.getElementById('dir-cw');
 
-  // --- DOM refs ---
+  function setDir(d) {
+    orbitDir = d;
+    dirCCW.classList.toggle('active', d === 'CCW');
+    dirCW.classList.toggle('active',  d === 'CW');
+    renderCanvas();
+  }
+  dirCCW.addEventListener('click', function () { setDir('CCW'); });
+  dirCW.addEventListener('click',  function () { setDir('CW');  });
+
+  // ── DOM refs ──
   var form        = document.getElementById('planner-form');
   var genBtn      = document.getElementById('generate-btn');
+  var genLabel    = document.getElementById('gen-label');
   var formError   = document.getElementById('form-error');
   var outputPanel = document.getElementById('output-panel');
-  var summary     = document.getElementById('mission-summary');
-  var badge       = document.getElementById('accuracy-badge');
+  var summaryEl   = document.getElementById('mission-summary');
+  var badgeEl     = document.getElementById('accuracy-badge');
   var countEl     = document.getElementById('waypoint-count');
   var copyBtn     = document.getElementById('copy-btn');
-  var copyMsg     = document.getElementById('copy-msg');
+  var copyLabel   = document.getElementById('copy-label');
 
   var outputs = {
     skyvector: document.getElementById('out-skyvector'),
@@ -984,7 +1522,6 @@
     plaintext: document.getElementById('tab-plaintext'),
     arcbrief:  document.getElementById('tab-arcbrief'),
   };
-
   var activeTab = 'skyvector';
 
   function showError(msg) { formError.textContent = msg; formError.hidden = false; }
@@ -995,8 +1532,11 @@
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.tab === name);
     });
-    Object.keys(tabPanels).forEach(function (k) { tabPanels[k].hidden = k !== name; });
-    copyMsg.hidden = true;
+    Object.keys(tabPanels).forEach(function (k) {
+      tabPanels[k].classList.toggle('active', k === name);
+    });
+    copyLabel.textContent = 'COPY TO CLIPBOARD';
+    copyBtn.classList.remove('copied');
   }
 
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -1007,31 +1547,28 @@
     e.preventDefault();
     clearError();
 
-    var departure    = document.getElementById('departure').value.trim().toUpperCase();
-    var arrival      = document.getElementById('arrival').value.trim().toUpperCase();
-    var targetLat    = parseFloat(document.getElementById('target_lat').value);
-    var targetLon    = parseFloat(document.getElementById('target_lon').value);
-    var radiusNm     = parseFloat(document.getElementById('radius_nm').value);
-    var numPoints    = parseInt(document.getElementById('num_points').value, 10);
-    var airspeedRaw  = document.getElementById('airspeed_kts').value.trim();
-    var altitudeRaw  = document.getElementById('altitude_ft').value.trim();
-    var airspeedKts  = airspeedRaw  !== '' ? parseFloat(airspeedRaw)  : null;
-    var altitudeFt   = altitudeRaw  !== '' ? parseFloat(altitudeRaw)  : null;
-    var legLengthNm  = parseFloat(document.getElementById('leg_length_nm').value);
+    var departure     = document.getElementById('departure').value.trim().toUpperCase();
+    var arrival       = document.getElementById('arrival').value.trim().toUpperCase();
+    var targetLat     = parseFloat(document.getElementById('target_lat').value);
+    var targetLon     = parseFloat(document.getElementById('target_lon').value);
+    var radiusNm      = parseFloat(document.getElementById('radius_nm').value);
+    var numPoints     = parseInt(document.getElementById('num_points').value, 10);
+    var airspeedRaw   = document.getElementById('airspeed_kts').value.trim();
+    var altitudeRaw   = document.getElementById('altitude_ft').value.trim();
+    var airspeedKts   = airspeedRaw  !== '' ? parseFloat(airspeedRaw)  : null;
+    var altitudeFt    = altitudeRaw  !== '' ? parseFloat(altitudeRaw)  : null;
+    var legLengthNm   = parseFloat(document.getElementById('leg_length_nm').value);
     var inboundCourse = parseFloat(document.getElementById('inbound_course').value);
-
-    var sarSpacingNm = parseFloat(document.getElementById('sar_spacing').value);
+    var sarSpacingNm  = parseFloat(document.getElementById('sar_spacing').value);
 
     if (!departure || !arrival) { showError('Departure and arrival ICAO codes are required.'); return; }
     if (isNaN(targetLat) || isNaN(targetLon)) { showError('Target latitude and longitude are required.'); return; }
-    if (targetLat < -90 || targetLat > 90) { showError('Latitude must be between -90 and 90.'); return; }
-    if (targetLon < -180 || targetLon > 180) { showError('Longitude must be between -180 and 180.'); return; }
-    if (patternType === 'circular' || patternType === 'figureeight' || patternType === 'sector') {
-      if (isNaN(radiusNm) || radiusNm <= 0) { showError('Radius must be a positive number.'); return; }
-    }
+    if (targetLat < -90 || targetLat > 90)    { showError('Latitude must be between -90 and 90.'); return; }
+    if (targetLon < -180 || targetLon > 180)  { showError('Longitude must be between -180 and 180.'); return; }
+    if ((patternType === 'circular' || patternType === 'figureeight' || patternType === 'sector') &&
+        (isNaN(radiusNm) || radiusNm <= 0)) { showError('Radius must be a positive number.'); return; }
     if (patternType === 'circular' && (isNaN(numPoints) || numPoints < 3 || numPoints > 64)) {
-      showError('Waypoints must be between 3 and 64.'); return;
-    }
+      showError('Waypoints must be between 3 and 64.'); return; }
     if (patternType === 'racetrack') {
       if (isNaN(legLengthNm) || legLengthNm <= 0) { showError('Leg length must be a positive number.'); return; }
       if (isNaN(inboundCourse)) { showError('Inbound course is required for racetrack.'); return; }
@@ -1057,96 +1594,76 @@
       if (isNaN(numPoints) || numPoints < 1) { showError('Num legs must be at least 1.'); return; }
     }
 
-    genBtn.disabled = true;
-    genBtn.textContent = 'Generating...';
+    genBtn.disabled  = true;
+    genLabel.textContent = 'GENERATING…';
 
-    // Run synchronously but yield to let the button redraw
+    canvas.classList.add('canvas-pulsing');
+    setTimeout(function () { canvas.classList.remove('canvas-pulsing'); }, 450);
+
     setTimeout(function () {
-      var waypoints;
-      var summaryText;
-      var maxErrText;
-      var arcBriefText;
+      var waypoints, summaryText, maxErrText, arcBriefText;
 
       if (patternType === 'racetrack') {
-        // inboundCourse = heading aircraft flies on the inbound leg (toward fix)
-        // outbound heading = inboundCourse + 180 (away from fix)
         var outboundCourse = (inboundCourse + 180) % 360;
-        waypoints = generateRacetrack(targetLat, targetLon, radiusNm, legLengthNm, outboundCourse, numPoints, orbitDir);
-        var dirLbl = orbitDir === 'CCW' ? 'CCW' : 'CW';
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | RACETRACK ' + radiusNm + 'NM \u00d7 ' + legLengthNm + 'NM | ' + dirLbl;
-        maxErrText = 'RACETRACK | ' + waypoints.length + ' pts';
+        waypoints    = generateRacetrack(targetLat, targetLon, radiusNm, legLengthNm, outboundCourse, numPoints, orbitDir);
+        summaryText  = departure + ' → ' + arrival + ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | RACETRACK ' + radiusNm + 'NM × ' + legLengthNm + 'NM | ' + orbitDir;
+        maxErrText   = 'RACETRACK | ' + waypoints.length + ' pts';
         arcBriefText = formatPatternBrief(waypoints, 'racetrack', radiusNm, legLengthNm, outboundCourse, numPoints, orbitDir, null);
 
       } else if (patternType === 'figureeight') {
         var axisCourse = inboundCourse % 360;
-        waypoints = generateFigureEight(targetLat, targetLon, radiusNm, axisCourse, numPoints);
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | FIGURE-8 ' + radiusNm + 'NM | AXIS ' + String(Math.round(axisCourse)).padStart(3, '0') + '\u00b0';
-        maxErrText = 'FIGURE-8 | ' + waypoints.length + ' pts';
+        waypoints    = generateFigureEight(targetLat, targetLon, radiusNm, axisCourse, numPoints);
+        summaryText  = departure + ' → ' + arrival + ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | FIGURE-8 ' + radiusNm + 'NM | AXIS ' + String(Math.round(axisCourse)).padStart(3, '0') + '°';
+        maxErrText   = 'FIGURE-8 | ' + waypoints.length + ' pts';
         arcBriefText = formatPatternBrief(waypoints, 'figureeight', radiusNm, null, null, null, null, axisCourse);
 
       } else if (patternType === 'expsquare') {
-        var initHdg = inboundCourse % 360;
-        waypoints = generateExpandingSquare(targetLat, targetLon, sarSpacingNm, initHdg, numPoints);
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | DATUM: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | EXP SQUARE | ' + numPoints + ' legs | ' + sarSpacingNm + ' NM spacing';
-        maxErrText = 'EXP SQUARE | ' + waypoints.length + ' wpts';
+        var initHdg  = inboundCourse % 360;
+        waypoints    = generateExpandingSquare(targetLat, targetLon, sarSpacingNm, initHdg, numPoints);
+        summaryText  = departure + ' → ' + arrival + ' | DATUM: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | EXP SQUARE | ' + numPoints + ' legs | ' + sarSpacingNm + ' NM spacing';
+        maxErrText   = 'EXP SQUARE | ' + waypoints.length + ' wpts';
         arcBriefText = formatPatternBrief(waypoints, 'expsquare', null, null, initHdg, null, null, null, sarSpacingNm);
 
       } else if (patternType === 'sector') {
-        var initBrg = inboundCourse % 360;
-        waypoints = generateSectorSearch(targetLat, targetLon, radiusNm, numPoints, initBrg);
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | DATUM: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | SECTOR | ' + numPoints + ' sectors | ' + radiusNm + ' NM radius';
-        maxErrText = 'SECTOR | ' + waypoints.length + ' wpts';
+        var initBrg  = inboundCourse % 360;
+        waypoints    = generateSectorSearch(targetLat, targetLon, radiusNm, numPoints, initBrg);
+        summaryText  = departure + ' → ' + arrival + ' | DATUM: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | SECTOR | ' + numPoints + ' sectors | ' + radiusNm + ' NM radius';
+        maxErrText   = 'SECTOR | ' + waypoints.length + ' wpts';
         arcBriefText = formatPatternBrief(waypoints, 'sector', radiusNm, null, initBrg, numPoints, null, null, null);
 
       } else if (patternType === 'partrack') {
-        var trkHdg = inboundCourse % 360;
-        waypoints = generateParallelTrack(targetLat, targetLon, trkHdg, legLengthNm, sarSpacingNm, numPoints);
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | START: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | PAR TRACK | ' + numPoints + ' legs | ' + legLengthNm + 'NM \u00d7 ' + sarSpacingNm + 'NM';
-        maxErrText = 'PAR TRACK | ' + waypoints.length + ' wpts';
+        var trkHdg   = inboundCourse % 360;
+        waypoints    = generateParallelTrack(targetLat, targetLon, trkHdg, legLengthNm, sarSpacingNm, numPoints);
+        summaryText  = departure + ' → ' + arrival + ' | START: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | PAR TRACK | ' + numPoints + ' legs | ' + legLengthNm + 'NM × ' + sarSpacingNm + 'NM';
+        maxErrText   = 'PAR TRACK | ' + waypoints.length + ' wpts';
         arcBriefText = formatPatternBrief(waypoints, 'partrack', null, legLengthNm, trkHdg, numPoints, null, null, sarSpacingNm);
 
       } else {
-        // circular (default)
         waypoints = generateOrbit(targetLat, targetLon, radiusNm, numPoints);
         if (orbitDir === 'CCW') waypoints = waypoints.slice().reverse();
-        var maxErr = computeMaxErrorFeet(radiusNm, numPoints);
-        var dirLabel = orbitDir === 'CCW' ? ' | CCW' : ' | CW';
-        summaryText = departure + ' \u2192 ' + arrival +
-          ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) +
-          ' | RADIUS: ' + radiusNm + ' NM' + dirLabel;
-        maxErrText = 'Max Error: ' + maxErr + ' ft';
+        var maxErr  = computeMaxErrorFeet(radiusNm, numPoints);
+        summaryText  = departure + ' → ' + arrival + ' | TARGET: ' + targetLat.toFixed(4) + ', ' + targetLon.toFixed(4) + ' | RADIUS: ' + radiusNm + ' NM | ' + orbitDir;
+        maxErrText   = 'Max Error: ' + maxErr + ' ft';
         arcBriefText = formatArcBrief(waypoints, radiusNm, numPoints, orbitDir);
       }
 
-      summary.textContent     = summaryText;
-      badge.textContent       = maxErrText;
-      countEl.textContent     = waypoints.length + ' waypoints';
-      outputs.skyvector.value = formatSkyVector(waypoints);
-      outputs.simbrief.value  = formatSimBrief(waypoints);
-      outputs.plaintext.value = formatPlainText(waypoints);
-      outputs.arcbrief.value  = arcBriefText;
+      summaryEl.textContent    = summaryText;
+      badgeEl.textContent      = maxErrText;
+      countEl.textContent      = waypoints.length + ' waypoints';
+      outputs.skyvector.value  = formatSkyVector(waypoints);
+      outputs.simbrief.value   = formatSimBrief(waypoints);
+      outputs.plaintext.value  = formatPlainText(waypoints);
+      outputs.arcbrief.value   = arcBriefText;
 
-      // Update Arc Brief tab label based on pattern
-      var arcTabBtn = document.querySelector('.tab-btn[data-tab="arcbrief"]');
-      if (patternType === 'racetrack')   arcTabBtn.textContent = 'Racetrack Brief';
-      else if (patternType === 'figureeight') arcTabBtn.textContent = 'Fig-8 Brief';
-      else if (patternType === 'expsquare')   arcTabBtn.textContent = 'SAR Brief';
-      else if (patternType === 'sector')      arcTabBtn.textContent = 'SAR Brief';
-      else if (patternType === 'partrack')    arcTabBtn.textContent = 'SAR Brief';
-      else arcTabBtn.textContent = 'Arc Brief';
+      var arcTab = document.querySelector('.tab-btn[data-tab="arcbrief"]');
+      if (patternType === 'racetrack')     arcTab.textContent = 'RACETRACK';
+      else if (patternType === 'figureeight') arcTab.textContent = 'FIG-8';
+      else if (patternType === 'expsquare' || patternType === 'sector' || patternType === 'partrack')
+        arcTab.textContent = 'SAR BRIEF';
+      else arcTab.textContent = 'ARC BRIEF';
 
-      var isSARPattern = patternType === 'expsquare' || patternType === 'sector' || patternType === 'partrack';
-      if (!isSARPattern) {
+      var isSARPat = patternType === 'expsquare' || patternType === 'sector' || patternType === 'partrack';
+      if (!isSARPat) {
         renderCompliance(radiusNm, airspeedKts, altitudeFt);
       } else {
         document.getElementById('compliance-section').hidden = true;
@@ -1155,33 +1672,37 @@
 
       outputPanel.hidden = false;
       switchTab('skyvector');
-
-      genBtn.disabled    = false;
-      genBtn.textContent = 'Generate';
+      genBtn.disabled      = false;
+      genLabel.textContent = 'GENERATE ORBIT';
     }, 0);
   });
 
   copyBtn.addEventListener('click', function () {
     var text = outputs[activeTab].value;
     if (!text) return;
-    copyMsg.hidden = true;
+    function onCopied() {
+      copyLabel.textContent = '✓ COPIED';
+      copyBtn.classList.add('copied');
+      setTimeout(function () {
+        copyLabel.textContent = 'COPY TO CLIPBOARD';
+        copyBtn.classList.remove('copied');
+      }, 1500);
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        copyMsg.hidden = false;
-      }).catch(function () { fallbackCopy(text); });
+      navigator.clipboard.writeText(text).then(onCopied).catch(function () { fallbackCopy(text, onCopied); });
     } else {
-      fallbackCopy(text);
+      fallbackCopy(text, onCopied);
     }
   });
 
-  function fallbackCopy(text) {
+  function fallbackCopy(text, cb) {
     var ta = outputs[activeTab];
     ta.select();
     ta.setSelectionRange(0, text.length);
-    try { document.execCommand('copy'); copyMsg.hidden = false; } catch (e) {}
+    try { document.execCommand('copy'); cb(); } catch (e) {}
   }
+
 })();
 </script>
-
 </body>
 </html>
