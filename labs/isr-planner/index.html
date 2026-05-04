@@ -126,6 +126,13 @@
     .pattern-btn.active { box-shadow: inset 2px 0 0 var(--green); }
     .profile-btn { font-size: 10px; padding: 7px 4px; }
 
+    .btn-inop { opacity: .32; cursor: not-allowed; pointer-events: none; }
+    .inop-badge {
+      display: inline-block; font-size: 8px; letter-spacing: .1em;
+      color: var(--red); border: 1px solid currentColor;
+      padding: 1px 3px; margin-left: 4px; vertical-align: middle;
+    }
+
     /* ── Direction toggle ── */
     .dir-toggle {
       display: flex; align-items: center; height: 36px;
@@ -295,11 +302,13 @@
           <div class="sec-label">Pattern Type</div>
           <div class="btn-grid-3">
             <button type="button" class="mode-btn pattern-btn active" data-pattern="circular">CIRCULAR</button>
-            <button type="button" class="mode-btn pattern-btn" data-pattern="racetrack">RACETRACK</button>
+            <button type="button" class="mode-btn pattern-btn btn-inop" data-pattern="sigint">SIGINT <span class="inop-badge">INOP</span></button>
             <button type="button" class="mode-btn pattern-btn" data-pattern="figureeight">FIGURE-8</button>
+            <button type="button" class="mode-btn pattern-btn" data-pattern="racetrack">RACETRACK</button>
             <button type="button" class="mode-btn pattern-btn" data-pattern="expsquare">EXP SQ</button>
             <button type="button" class="mode-btn pattern-btn" data-pattern="sector">SECTOR</button>
             <button type="button" class="mode-btn pattern-btn" data-pattern="partrack">PAR TRK</button>
+            <button type="button" class="mode-btn pattern-btn" data-pattern="artrack">AR TRACK</button>
           </div>
 
           <hr class="sec-divider">
@@ -559,6 +568,27 @@ const parallelTrack = (lat, lon, hdg, leg, spacing, legs) => {
   return wps;
 };
 
+// Aerial Refueling Track — oval with named AREP/IP/EXP/EXIT waypoints.
+// Returns: [AREP, IP, …far-turn-arc…, EXP, EXIT, …near-turn-arc…]
+const arTrack = (lat, lon, r, leg, course, semiPts, dir) => {
+  const opp  = (course + 180) % 360;
+  const half = leg / 2;
+  const sign = dir === 'CW' ? 1 : -1;
+  const pR   = dir === 'CW' ? (course + 90) % 360 : (course - 90 + 360) % 360;
+  const pL   = (pR + 180) % 360;
+  const cF   = destPt(lat, lon, course, half);
+  const cN   = destPt(lat, lon, opp,   half);
+  const arc  = (ox, oy, startBrg) =>
+    Array.from({ length: semiPts + 1 }, (_, i) => {
+      const b  = (startBrg + sign * i * (180 / semiPts) + 360) % 360;
+      const pt = destPt(ox, oy, b, r);
+      return [+pt[0].toFixed(6), +pt[1].toFixed(6)];
+    });
+  const farArc  = arc(cF[0], cF[1], pR);  // IP → EXP
+  const nearArc = arc(cN[0], cN[1], pL);  // EXIT → AREP
+  return [nearArc.at(-1), ...farArc, ...nearArc.slice(0, -1)];
+};
+
 // ── Compliance ────────────────────────────────────────────────────────────────
 
 const PROFILES = {
@@ -678,6 +708,23 @@ const formatPatternBrief = (wps, type, opts) => {
       'SAR BRIEF — PARALLEL TRACK (CREEPING LINE)',
       `TRACK HEADING: ${pad(course,3)}°  |  LEG LENGTH: ${leg} NM  |  SPACING: ${spacing} NM`, '', 'WP   TYPE     LAT           LON',
       ...wps.map((w, i) => `${String(i+1).padStart(2,'0')}   ${i%2===0 ? 'LEG-START' : 'LEG-END  '}  ${fmt6(w[0])}   ${fmt6(w[1])}`)
+    ].join('\n');
+  }
+  if (type === 'artrack') {
+    const opp    = (course + 180) % 360;
+    const typeOf = i => {
+      if (i === 0)        return 'AREP    ';
+      if (i === 1)        return 'IP      ';
+      if (i <= semi)      return 'TURN-F  ';
+      if (i === semi + 1) return 'EXP     ';
+      if (i === semi + 2) return 'EXIT    ';
+      return                     'TURN-N  ';
+    };
+    return [
+      `AR TRACK BRIEF — ${r} NM TURNS | ${leg} NM REFUELING LEG | ${dir === 'CCW' ? 'COUNTERCLOCKWISE' : 'CLOCKWISE'}`,
+      `REFUELING COURSE: ${pad(course,3)}°  RETURN: ${pad(opp,3)}°`,
+      '', 'WP   TYPE     LAT           LON',
+      ...wps.map((w, i) => `${String(i+1).padStart(2,'0')}   ${typeOf(i)}${fmt6(w[0])}   ${fmt6(w[1])}`)
     ].join('\n');
   }
 };
@@ -825,6 +872,40 @@ const renderCanvas = () => {
       ptx += Math.cos(perpR)*spcPx; pty += Math.sin(perpR)*spcPx;
     }
     drawLabel(`PAR TRACK  legs=${nl}  spc=${p.spacing}NM`);
+
+  } else if (patternType === 'artrack') {
+    const inbR   = (p.course - 90) * Math.PI / 180;
+    const halfPx = avail * .52, trnR = avail * .28;
+    const [dx, dy] = [Math.cos(inbR), Math.sin(inbR)];
+    const side = orbitDir === 'CW' ? 1 : -1;
+    const [px, py] = [-dy * side, dx * side];
+    const cF = [cx + dx * halfPx, cy + dy * halfPx];
+    const cN = [cx - dx * halfPx, cy - dy * halfPx];
+    const arep  = [cN[0] + px * trnR, cN[1] + py * trnR];
+    const ip    = [cF[0] + px * trnR, cF[1] + py * trnR];
+    const exp_  = [cF[0] - px * trnR, cF[1] - py * trnR];
+    const exit_ = [cN[0] - px * trnR, cN[1] - py * trnR];
+    // Refueling leg — highlighted glow + solid line
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,255,136,0.18)';
+    ctx.beginPath(); ctx.moveTo(arep[0], arep[1]); ctx.lineTo(ip[0], ip[1]); ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = '#00ff88';
+    ctx.beginPath(); ctx.moveTo(arep[0], arep[1]); ctx.lineTo(ip[0], ip[1]); ctx.stroke();
+    // Outbound/return leg — dashed
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(exp_[0], exp_[1]); ctx.lineTo(exit_[0], exit_[1]); ctx.stroke();
+    ctx.setLineDash([]);
+    // Turn arcs
+    const drawArcAR = ([ox, oy], endPt) => {
+      const startA = Math.atan2(endPt[1] - oy, endPt[0] - ox);
+      ctx.beginPath(); ctx.arc(ox, oy, trnR, startA, startA + Math.PI, orbitDir === 'CCW'); ctx.stroke();
+    };
+    drawArcAR(cF, ip); drawArcAR(cN, exit_);
+    // Named waypoints
+    drawWP(arep[0],  arep[1],  0);
+    drawWP(ip[0],    ip[1],    1);
+    drawWP(exp_[0],  exp_[1],  2);
+    drawWP(exit_[0], exit_[1], 3);
+    drawLabel(`AR TRACK  r=${p.r}NM  leg=${p.leg}NM`);
   }
 };
 
@@ -847,15 +928,15 @@ const updateFields = () => {
   const isSAR = ['expsquare','sector','partrack'].includes(p);
 
   document.getElementById('field-radius').hidden         = ['expsquare','partrack'].includes(p);
-  document.getElementById('field-leg-length').hidden     = !['racetrack','partrack'].includes(p);
-  document.getElementById('field-inbound-course').hidden = !['racetrack','figureeight','expsquare','sector','partrack'].includes(p);
+  document.getElementById('field-leg-length').hidden     = !['racetrack','partrack','artrack'].includes(p);
+  document.getElementById('field-inbound-course').hidden = !['racetrack','figureeight','expsquare','sector','partrack','artrack'].includes(p);
   document.getElementById('field-sar-spacing').hidden    = !['expsquare','partrack'].includes(p);
   document.getElementById('field-dir-toggle').hidden     = ['figureeight','expsquare','sector','partrack'].includes(p);
 
   const labels = {
     radius:  p === 'sector' ? 'Search Radius' : 'Radius',
-    points:  { racetrack: 'Points per Turn', sector: 'Num Sectors', expsquare: 'Num Legs', partrack: 'Num Legs' }[p] || 'Waypoints',
-    course:  { figureeight: 'Axis Course', expsquare: 'Initial Heading', sector: 'Initial Bearing', partrack: 'Track Heading' }[p] || 'Inbound Course',
+    points:  { racetrack: 'Points per Turn', sector: 'Num Sectors', expsquare: 'Num Legs', partrack: 'Num Legs', artrack: 'Arc Points' }[p] || 'Waypoints',
+    course:  { figureeight: 'Axis Course', expsquare: 'Initial Heading', sector: 'Initial Bearing', partrack: 'Track Heading', artrack: 'Refueling Course' }[p] || 'Inbound Course',
     spacing: p === 'partrack' ? 'Track Spacing' : 'Leg Spacing',
   };
   document.getElementById('label-radius').textContent         = labels.radius;
@@ -941,8 +1022,13 @@ document.getElementById('planner-form').addEventListener('submit', e => {
   if (isNaN(lat) || isNaN(lon))              return showError('Target latitude and longitude are required.');
   if (lat < -90 || lat > 90)                 return showError('Latitude must be between -90 and 90.');
   if (lon < -180 || lon > 180)               return showError('Longitude must be between -180 and 180.');
-  if (['circular','figureeight','sector'].includes(p) && (isNaN(r) || r <= 0)) return showError('Radius must be a positive number.');
+  if (['circular','figureeight','sector','artrack'].includes(p) && (isNaN(r) || r <= 0)) return showError('Radius must be a positive number.');
   if (p === 'circular' && (isNaN(n) || n < 3 || n > 64))     return showError('Waypoints must be between 3 and 64.');
+  if (p === 'artrack') {
+    if (isNaN(leg) || leg <= 0)           return showError('Leg length must be a positive number.');
+    if (isNaN(course))                    return showError('Refueling course is required.');
+    if (isNaN(n) || n < 2 || n > 16)     return showError('Arc points must be between 2 and 16.');
+  }
   if (p === 'racetrack') {
     if (isNaN(leg) || leg <= 0)              return showError('Leg length must be a positive number.');
     if (isNaN(course))                       return showError('Inbound course is required for racetrack.');
@@ -979,7 +1065,14 @@ document.getElementById('planner-form').addEventListener('submit', e => {
     const route  = `${dep} → ${arr}`;
     const target = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
-    if (p === 'racetrack') {
+    if (p === 'artrack') {
+      wps     = arTrack(lat, lon, r, leg, course, n, orbitDir);
+      summary = `${route} | TARGET: ${target} | AR TRACK ${r}NM TURNS × ${leg}NM LEG | ${orbitDir}`;
+      badge   = `AR TRACK | ${wps.length} pts`;
+      brief   = formatPatternBrief(wps, 'artrack', { r, leg, course, semi: n, dir: orbitDir });
+      document.querySelector('.tab-btn[data-tab="arcbrief"]').textContent = 'AR TRACK';
+
+    } else if (p === 'racetrack') {
       const out = (course + 180) % 360;
       wps     = racetrack(lat, lon, r, leg, out, n, orbitDir);
       summary = `${route} | TARGET: ${target} | RACETRACK ${r}NM × ${leg}NM | ${orbitDir}`;
