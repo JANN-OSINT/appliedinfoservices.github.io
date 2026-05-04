@@ -897,7 +897,7 @@ const renderCanvas = () => {
     // Turn arcs
     const drawArcAR = ([ox, oy], endPt) => {
       const startA = Math.atan2(endPt[1] - oy, endPt[0] - ox);
-      ctx.beginPath(); ctx.arc(ox, oy, trnR, startA, startA + Math.PI, orbitDir === 'CCW'); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ox, oy, trnR, startA, startA + Math.PI, orbitDir === 'CW'); ctx.stroke();
     };
     drawArcAR(cF, ip); drawArcAR(cN, exit_);
     // Named waypoints
