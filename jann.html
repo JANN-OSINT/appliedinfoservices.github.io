@@ -4,64 +4,277 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="JANN – Joint Aerosint News Network. Open-source intelligence and aerospace news analysis.">
-  <title>JANN | Applied Information Services</title>
+  <meta name="description" content="JANN — Joint AEROSINT News Network. The open-source analytical publication of Applied Information Services tracking aerospace activity in the defense and intelligence operating environment.">
+  <title>JANN — Joint AEROSINT News Network | Applied Information Services</title>
 
   <!-- Google Analytics -->
-
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWY00FKP9J"></script>
-
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date()); 
+    gtag('js', new Date());
     gtag('config', 'G-CWY00FKP9J');
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css?v=11">
+
+  <style>
+    /* ── Page layout ── */
+    .jann-body {
+      background: var(--color-surface-alt);
+      padding: var(--f4) 0 var(--f6);
+    }
+    .jann-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 var(--f5);
+    }
+
+    /* ── Header band ── */
+    .jann-band {
+      background: var(--color-nav);
+      padding: var(--f5) var(--f5) var(--f4);
+    }
+    .jann-band-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--f2);
+    }
+    .jann-domain-tags {
+      font-family: var(--font-mono);
+      font-size: var(--f2);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+    }
+    .jann-doc-type {
+      font-size: var(--f4);
+      font-weight: 600;
+      color: var(--color-text-nav);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .jann-classification {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(201, 168, 76, 0.65);
+    }
+    .jann-band-rule {
+      height: 2px;
+      background: var(--color-accent);
+    }
+
+    /* ── Lede ── */
+    .jann-lede {
+      padding: var(--f5) 0 var(--f4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      margin-bottom: var(--f4);
+    }
+    .jann-lede p {
+      font-size: var(--f3);
+      font-weight: 300;
+      line-height: 1.618;
+      color: var(--color-text-secondary);
+      max-width: 680px;
+      margin: 0 0 var(--f2);
+    }
+    .jann-lede p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ── Section label ── */
+    .jann-section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      display: flex;
+      align-items: center;
+      gap: var(--f2);
+      margin-bottom: var(--f3);
+      margin-top: var(--f5);
+    }
+    .jann-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-accent);
+      opacity: 0.3;
+    }
+
+    /* ── Content cards (dark surface) ── */
+    .jann-card {
+      background: var(--color-nav);
+      border: 1px solid rgba(201, 168, 76, 0.18);
+      border-top: 3px solid var(--color-accent);
+      padding: var(--f4);
+      margin-bottom: var(--f3);
+    }
+    .jann-card p {
+      font-size: var(--f2);
+      color: rgba(232, 236, 244, 0.8);
+      line-height: 1.618;
+      max-width: none;
+      margin: var(--f2) 0 0;
+    }
+    .jann-card p:first-of-type {
+      margin-top: 0;
+    }
+
+    /* ── Subscribe block ── */
+    .jann-subscribe-block {
+      background: var(--color-nav);
+      border: 1px solid rgba(201, 168, 76, 0.18);
+      border-top: 3px solid var(--color-accent);
+      padding: var(--f4);
+      margin-bottom: var(--f4);
+    }
+    .jann-subscribe-cta {
+      font-size: var(--f2);
+      color: rgba(232, 236, 244, 0.8);
+      line-height: 1.618;
+      max-width: none;
+      margin: 0 0 var(--f3);
+    }
+    .jann-subscribe-cta em {
+      color: var(--color-accent);
+      font-style: italic;
+    }
+
+    /* ── JANN Substack Embed Container ── */
+    .jann-embed-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin: 2rem 0;
+    }
+    .jann-embed-wrapper iframe {
+      border: 1px solid var(--color-accent) !important;
+      background: transparent !important;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    /* ── Embed footer note ── */
+    .jann-embed-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(232, 236, 244, 0.4);
+      line-height: 1.618;
+      max-width: none;
+      margin: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .jann-band {
+        padding: var(--f4) var(--f3) var(--f3);
+      }
+      .jann-inner {
+        padding: 0 var(--f3);
+      }
+      .jann-doc-type {
+        font-size: var(--f3);
+      }
+      .jann-lede p {
+        font-size: var(--f2);
+      }
+      .jann-card {
+        padding: var(--f3);
+      }
+      .jann-subscribe-block {
+        padding: var(--f3);
+      }
+    }
+  </style>
 </head>
 <body>
   <div id="header-placeholder"></div>
 
-  <div class="page-content">
-    <div class="crumb"><a href="index.html">← Back to Home</a></div>
+  <!-- Identity band -->
+  <div class="jann-band">
+    <div class="jann-band-inner">
+      <div class="jann-domain-tags">Aerospace &middot; Defense &middot; Intelligence &middot; OSINT</div>
+      <div class="jann-doc-type">JANN &mdash; Joint AEROSINT News Network</div>
+      <div class="jann-classification">Open-Source Analytical Publication &mdash; Applied Information Services</div>
+    </div>
+  </div>
+  <div class="jann-band-rule"></div>
 
-    <div class="content-section jann-section">
-      <h2>JANN</h2>
+  <div class="jann-body">
+    <div class="jann-inner">
 
-      <div class="site-notice">
-        <p>JANN (The AEROSINT) is an open-source aerospace and defense intelligence monitoring publication produced by Applied Information Services, LLC. Content is based exclusively on publicly available sources. Nothing published through JANN constitutes professional, legal, or investment advice. Subscription and data handling are governed by Substack's Terms of Use and Privacy Policy.</p>
+      <!-- Lede -->
+      <div class="jann-lede">
+        <p>JANN is the open-source analytical publication of Applied Information Services.</p>
+        <p>Published under <em>The AEROSINT</em> &mdash; a Substack imprint &mdash; JANN tracks aerospace activity
+        in the defense and intelligence operating environment using publicly available
+        information, signals analysis, and primary source corroboration.</p>
       </div>
 
-      <p>Joint Aerosint News Network.</p>
-
-      <div class="substack-embed">
-        <iframe src="https://jann.substack.com/embed" width="480" height="320" style="border:1px solid #EEE; background:white;" frameborder="0" scrolling="no"></iframe>
+      <!-- What Is AEROSINT -->
+      <div class="jann-section-label">What Is AEROSINT</div>
+      <div class="jann-card">
+        <p>AEROSINT (Aerospace OSINT) is the disciplined application of OSINT methodology to aerospace
+        platforms, flight operations, and civil aviation infrastructure with defense
+        or intelligence relevance.</p>
+        <p>The term was coined and codified by Applied Information Services. It represents
+        a distinct analytical discipline &mdash; not a tool, not a product category, and not
+        a casual observation of interesting aircraft. AEROSINT operates at the
+        intersection of collection tradecraft, pattern-of-life analysis, and domain
+        expertise.</p>
       </div>
 
-      <div class="project-buttons">
-        <a href="https://jann.substack.com" target="_blank" rel="noopener">Visit JANN</a>
+      <!-- Relationship to AIS -->
+      <div class="jann-section-label">Relationship to AIS</div>
+      <div class="jann-card">
+        <p>JANN functions as AIS&rsquo;s published analytical record. Where AIS engagements
+        are client-privileged, JANN represents the open-source layer: verified
+        findings, documented methodologies, and signals of record for the defense
+        and intelligence community.</p>
+        <p>Subscribers include analysts, contractors, program managers, and researchers
+        operating across the defense industrial base and the intelligence community.</p>
       </div>
 
-      <h3>Subscribe to JANN</h3>
-      <p>Access full archives, early releases, and premium aerospace and defense intelligence reporting.</p>
-      <div class="project-buttons">
-        <a href="https://jann.substack.com/subscribe" target="_blank" rel="noopener">Subscribe to JANN</a>
-      </div>
+      <!-- Subscribe + Embed -->
+      <div class="jann-section-label">Subscribe</div>
+      <section class="jann-subscribe-block">
+        <p class="jann-subscribe-cta">
+          Subscribe to <em>The AEROSINT</em> on Substack to receive JANN publications direct.
+        </p>
+        <div class="jann-embed-wrapper">
+          <iframe
+            src="https://jann.substack.com/embed"
+            width="480"
+            height="320"
+            class="jann-substack-embed"
+            frameborder="0"
+            scrolling="no">
+          </iframe>
+        </div>
+        <p class="jann-embed-note">
+          JANN operates at a minimum viable tempo during active AIS operational periods.
+          Publication frequency reflects analytical discipline, not inactivity.
+        </p>
+      </section>
+
     </div>
   </div>
 
   <div id="footer-placeholder"></div>
 
   <script>
-    // Load header
     fetch('includes/header.html')
       .then(response => response.text())
       .then(data => document.getElementById('header-placeholder').innerHTML = data);
-    
-    // Load footer
+
     fetch('includes/footer.html')
       .then(response => response.text())
       .then(data => {
